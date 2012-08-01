@@ -16,11 +16,14 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
 <h4>Features</h4>
 
+* Searches post title and body content
+* Can search by multiple keywords, and by full phrases
 * Currently can only facet by post Category, but we will be expanding the functionality to auto-detect and suggest indefinite facets
-* Attractive and lightweight interface based on jQuery and Backbone.js
+* Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Bypasses WordPress’ built-in search functions and conducts direct database queries for low overhead and high flexibility
 
 Many new features coming quickly, stay tuned.
+
 
 Please be advised that this is a beta release and not all features are available yet. Please install it and try it out, but we wouldn't recommend using this plugin on a live site. We'll be updating the plugin heavily over the coming weeks, so check back for updates.
 
