@@ -48,8 +48,6 @@ Post your questions in the support forum.
 
 1. Search bar with results.
 
-`/tags/0.2/screenshot-1.jpg`
-
 == Changelog ==
 
 = 0.2 =
