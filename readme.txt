@@ -18,6 +18,7 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
 * Searches post title and body content
 * Can search by multiple keywords, and by full phrases
+* Highlights search terms in results
 * Currently can only facet by post Category, but we will be expanding the functionality to auto-detect and suggest indefinite facets
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Bypasses WordPress’ built-in search functions and conducts direct database queries for low overhead and high flexibility
