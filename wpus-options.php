@@ -421,7 +421,7 @@ class WPUltimateSearchOptions extends WPUltimateSearch {
 		*/
 		public function styles() {
 
-			wp_register_style( 'wpus-admin', plugins_url('/wpus-options.css', __FILE__) );
+			wp_register_style( 'wpus-admin', plugins_url('/css/wpus-options.css', __FILE__) );
 			wp_enqueue_style( 'wpus-admin' );
 
 		}

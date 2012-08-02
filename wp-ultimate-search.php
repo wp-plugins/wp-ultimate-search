@@ -193,10 +193,10 @@ if (!class_exists("WPUltimateSearch")) {
 			// generated nonce we created earlier
 			if ( ! wp_verify_nonce( $nonce, 'search-nonce' ) )
 				die ( 'Busted!');
-		
-			$searcharray = $_GET['usearchquery'];
+			
 			global $wpdb;
 		
+			if($searcharray = $_GET['usearchquery'])
 			foreach($searcharray as $i => $row){
 				if($row['category']){
 					$categories[$i] = get_cat_ID($row['category']);

@@ -29,7 +29,7 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
 Many new features coming quickly, stay tuned.
 
-Please be advised that this is a beta release and not all features are available yet. We'll be updating the plugin heavily over the coming weeks, so check back for updates.
+Please be advised that this is a beta release and not all features are available yet. We'll be updating the plugin heavily over the coming weeks, so check back for updates. Please let us know if you encounter any bugs, or have any suggestions for improvement.
 
 == Installation ==
 
