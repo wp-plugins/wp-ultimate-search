@@ -4,25 +4,32 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 0.2
+Stable tag: 0.3
  
 Advanced faceted auto completing AJAX search and filter utility.
 
 == Description ==
 
-WP Ultimate Search: a highly customizable WordPress search alternative with the ability to autocomplete faceted search queries.
+WP Ultimate Search: a highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
 
 Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
 <h4>Features</h4>
 
-* Currently can only facet by post Category, but we will be expanding the functionality to auto-detect and suggest indefinite facets
-* Attractive and lightweight interface based on jQuery and Backbone.js
+* Searches post title and body content
+* Can search by multiple keywords, and by full phrases
+* Highlights search terms in results
+* Searches inside of shortcodes
+* Option to send search queries as events to your Google Analytics account
+* Facets by post category
+* Can search in multiple categories (OR search)
+* Category options are dynamically generated and autocompleted as you type
+* Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Bypasses WordPress’ built-in search functions and conducts direct database queries for low overhead and high flexibility
 
 Many new features coming quickly, stay tuned.
 
-Please be advised that this is a beta release and not all features are available yet. Please install it and try it out, but we wouldn't recommend using this plugin on a live site. We'll be updating the plugin heavily over the coming weeks, so check back for updates.
+Please be advised that this is a beta release and not all features are available yet. We'll be updating the plugin heavily over the coming weeks, so check back for updates. Please let us know if you encounter any bugs, or have any suggestions for improvement.
 
 == Installation ==
 
@@ -52,16 +59,25 @@ Post your questions in the support forum.
 
 == Changelog ==
 
+= 0.3 =
+* Added options page
+* Ability to search within shortcodes
+* Google Analytics integration
+* Can search by multiple categories (OR)
+* Option to put scripts in header or footer
+* Will throw an error if search results shortcode isn't present on page
+* Loading animations
+* Fixed bug where widget wouldn't display on home page
+* Misc. performance tweaks
+
 = 0.2 =
 * First public release
 
 == To Do ==
 
-* Options page
 * Search Advanced Custom Fields data (and other post meta)
 * Permalinks for search results
 * Search results tempting
 * Load search results page if results area is not already loaded
 * Caching of meta data
-* Loading graphics
 * Sortable results
