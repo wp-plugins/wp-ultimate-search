@@ -161,8 +161,8 @@ jQuery(document).ready(function($) {
 		],
 		callbacks:  {
 			search:       function(query, searchCollection) {
-	//		  	enable the following line for search query debugging:
-	//			console.log(["query", searchCollection.facets(), query]);
+				//		  	enable the following line for search query debugging:
+				//			console.log(["query", searchCollection.facets(), query]);
 
 				$("#vs-cancel").addClass("hidden");
 				var target = document.getElementById('vs-cancel');
@@ -182,9 +182,9 @@ jQuery(document).ready(function($) {
 				var searchdata = [];
 				var searchuri = '';
 				searchdata = searchCollection.facets();
-				for (var i = 0; i < searchdata.length; i++) {
+				for(var i = 0; i < searchdata.length; i++) {
 					searchuri = searchuri + $.param(searchdata[i]);
-					if (i < (searchdata.length -1)) {
+					if(i < (searchdata.length - 1)) {
 						searchuri = searchuri + "&";
 					}
 				}
@@ -253,19 +253,19 @@ jQuery(document).ready(function($) {
 	if(/webOS|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 		$('.VS-search').append("<div class='iosnotice'>Due to a bug in mobile Safari, the search box may not function properly. To fix this: exit Safari and double-press your 'Home' button to access the app-switcher. Press and hold the Safari icon until the red 'close' icon appears. Close Safari, and open it again. Problem should be solved :)</div>");
 	}
-	
+
 	VS.utils.Searcher = Backbone.Router.extend({
 		routes: {
 			"search/:query": "search"  // matches http://ultimatesearch.mindsharelabs.com/#search/query
 		},
-		search:       function(query) {
+		search: function(query) {
 
 			visualSearch.searchBox.value(query.replace(/=/g, ":").replace(/&/g, " ").replace(/\+/g, "_"));
-			
+
 			query = query.split("&");
 			var queryarray = new Array();
-			
-			$.each(query, function(i, key){
+
+			$.each(query, function(i, key) {
 				queryarray[i] = new Object();
 				var temparray = key.split("=");
 				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ");
@@ -317,7 +317,7 @@ jQuery(document).ready(function($) {
 	});
 	// Initiate the router
 	VS.app.searcher = new VS.utils.Searcher;
-	
+
 	// Start Backbone history a neccesary step for bookmarkable URL's
 	Backbone.history.start();
 });

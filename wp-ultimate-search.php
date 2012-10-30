@@ -3,8 +3,8 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 0.7
-Author: Bryce Corkins / Mindshare Studios
+Version: 1.0
+Author: Bryce Corkins / Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
 
@@ -13,7 +13,7 @@ Author URI: http://mindsharelabs.com/
  * @author    Mindshare Studios, Inc.
  *
  * @license   Released under the GPL license http://www.opensource.org/licenses/gpl-license.php
- * @see       This is an add-on for WordPress http://wordpress.org
+ * @see       http://wordpress.org/extend/plugins/wp-ultimate-search/
  *
  * **********************************************************************
  * This program is free software; you can redistribute it and/or modify
@@ -27,15 +27,14 @@ Author URI: http://mindsharelabs.com/
  * GNU General Public License for more details.
  * **********************************************************************
  *
- * @todo add protected var options, reduce calls to get_option
- * @todo move includes into class, admin_init and init
- * @todo figure out why update mechanism isn't returning the correct results, http://wp.tutsplus.com/tutorials/plugins/a-guide-to-the-wordpress-http-api-automatic-plugin-updates/
+ * @todo      add protected var options, reduce calls to get_option
+ * @todo      use WPUS_PLUGIN_SLUG
  */
 
 /* CONSTANTS */
 if(!defined('WPUS_MIN_WP_VERSION')) {
 	define('WPUS_MIN_WP_VERSION', '3.1');
-} //@todo yo Bryce: what version of WP is needed?
+}
 
 if(!defined('WPUS_PLUGIN_NAME')) {
 	define('WPUS_PLUGIN_NAME', 'WP Ultimate Search');
@@ -49,12 +48,21 @@ if(!defined('WPUS_DIR_PATH')) {
 	define('WPUS_DIR_PATH', plugin_dir_path(__FILE__));
 }
 
-if(!defined('WPUS_BASE')) {
-	define('WPUS_BASE', plugin_dir_url(__FILE__));
+if(!defined('WPUS_DIR_URL')) {
+	define('WPUS_DIR_URL', plugin_dir_url(__FILE__));
 }
 
-if ( ! defined( 'WP_PLUGIN_DIR' ) )
-       define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
+if(!defined('WPUS_PRO_SLUG')) {
+	define('WPUS_PRO_SLUG', 'wp-ultimate-search-pro');
+}
+
+if(!defined('WPUS_PRO_PATH')) {
+	define('WPUS_PRO_PATH', WPUS_DIR_PATH.trailingslashit(WPUS_PRO_SLUG));
+}
+
+if(!defined('WPUS_PRO_FILE')) {
+	define('WPUS_PRO_FILE', WPUS_PRO_SLUG.'.php');
+}
 
 // check WordPress version
 global $wp_version;
@@ -69,24 +77,21 @@ if(!function_exists('add_action')) {
 	exit();
 }
 
-add_action('init', 'mindshare_auto_update');
-function mindshare_auto_update() {
-	
-}
-
 /**
  *  WPUltimateSearch CONTAINER CLASS
  */
 if(!class_exists("WPUltimateSearch")) :
 	class WPUltimateSearch {
 
-		/**
-		 * @var $metadata_url (string) used for update service
-		 */
-		private $metadata_url;
-		public static $is_pro = true;
-
 		function __construct() {
+
+			require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
+			$options_page = new WPUltimateSearchOptions();
+			add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
+			add_action('admin_init', array($options_page, 'register_settings'));
+
+			//add_action('admin_menu', array($this, 'admin_menu'));
+			add_action('init', array($this, 'init'));
 
 			// REGISTER AJAX FUNCTIONS WITH ADMIN-AJAX
 			add_action('wp_ajax_usearch_search', array($this, 'get_results'));
@@ -98,12 +103,31 @@ if(!class_exists("WPUltimateSearch")) :
 			add_shortcode(WPUS_PLUGIN_SLUG."-bar", array($this, 'search_form'));
 			add_shortcode(WPUS_PLUGIN_SLUG."-results", array($this, 'search_results'));
 
-			// REGISTER WIDGET
-			add_action('widgets_init', create_function('', 'register_widget( "wpultimatesearchwidget" );'));
+			add_action('widgets_init', array($this, 'wpus_register_widgets')); // REGISTER WIDGET
 
 			register_activation_hook(__FILE__, array($this, 'activation_hook')); // on plugin activation, create search results page
 		}
-		
+
+		/**
+		 * wpus_register_widgets
+		 *
+		 */
+		function wpus_register_widgets() {
+			require_once(WPUS_DIR_PATH.'views/wpus-widget.php'); // include widget file
+			register_widget('wpultimatesearchwidget');
+		}
+
+		function admin_menu() {
+
+		}
+
+		function init() {
+			if(class_exists('WPUltimateSearchPro')) {
+				require_once(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
+				//new WPUltimateSearchPro();
+			}
+		}
+
 		/**
 		 *
 		 * Create search results page
@@ -121,11 +145,11 @@ if(!class_exists("WPUltimateSearch")) :
 				}
 			} // if search page already exists, exit
 			$results_page = array(
-				'post_title'   => 'Search',
-				'post_content' => '['.WPUS_PLUGIN_SLUG.'-bar]<br />['.WPUS_PLUGIN_SLUG.'-results]',
-				'post_status'  => 'publish',
-				'post_type'    => 'page',
-				'post_name'    => 'search',
+				'post_title'     => 'Search',
+				'post_content'   => '['.WPUS_PLUGIN_SLUG.'-bar]<br />['.WPUS_PLUGIN_SLUG.'-results]',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'post_name'      => 'search',
 				'comment_status' => 'closed'
 			);
 			wp_insert_post($results_page);
@@ -134,39 +158,6 @@ if(!class_exists("WPUltimateSearch")) :
 		/**
 		 *  PRIVATE FUNCTIONS
 		 */
-
-		// values entered by licensed user, probably set via options page
-		/*$key = '8b8c96bff3e618ddd4adb86772739b5d2bb85e24';
-		$email = 'damiantaggart@gmail.com';
-		$v = get_license($key, $email) == md5('MQ==') ? '1' : 'invalid';*/
-
-		/**
-		 * get_license
-		 *
-		 * @param $key
-		 * @param $email
-		 *
-		 * @return float|string
-		 */
-		protected function get_license($key, $email) {
-			$hash = 'cdd96d3cc73d1dbdaffa03cc6cd7339b';
-			$args = array(
-				'method'      => 'POST',
-				'timeout'     => 45,
-				'redirection' => 5,
-				'httpversion' => '1.0',
-				'blocking'    => TRUE,
-				'headers'     => array(),
-				'body'        => array('project' => 'wp-ultimate-search', 'action' => 'license', 'k' => $key, 'u' => $email),
-				'cookies'     => array()
-			);
-			$response = wp_remote_post('http://mindsharelabs.com/update/', $args);
-			if( is_wp_error( $response ) ) {
-			   echo 'Unable to reach the server. Please try again in a minute.';
-			} else {
-				return $response['body'];
-			}
-		}
 
 		/**
 		 *
@@ -238,7 +229,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * Modified version of wp_strip_all_tags
 		 *
 		 *
-		 * Strips all HTML etc. tags from a given inpus, converts line breaks to spaces, and
+		 * Strips all HTML etc. tags from a given input, converts line breaks to spaces, and
 		 * removes any trailing tags that got clipped by the excerpt process
 		 *
 		 * @param      $string
@@ -308,7 +299,7 @@ if(!class_exists("WPUltimateSearch")) :
 				if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {
 					require(TEMPLATEPATH.'/wpus-results-template.php');
 				} else {
-					require('views/wpus-results-template.php');
+					require(WPUS_DIR_PATH.'views/wpus-results-template.php');
 				}
 				if(wpus_option('track_events')) // if we're tracking searches as analytics events, pass the number of search results back to main.js
 				{
@@ -433,12 +424,12 @@ if(!class_exists("WPUltimateSearch")) :
 		public function register_scripts() {
 
 			// ENQUEUE VISUALSEARCH SCRIPTS
-			wp_enqueue_script('underscore', WPUS_BASE.'js/underscore-min.js');
-			wp_enqueue_script('backbone', WPUS_BASE.'js/backbone-min.js', array('underscore'));
-			wp_enqueue_script('visualsearch', WPUS_BASE.'js/visualsearch.js', array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-autocomplete', 'backbone'));
+			wp_enqueue_script('underscore', WPUS_DIR_PATH.'js/underscore-min.js');
+			wp_enqueue_script('backbone', WPUS_DIR_PATH.'js/backbone-min.js', array('underscore'));
+			wp_enqueue_script('visualsearch', WPUS_DIR_PATH.'js/visualsearch.js', array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-autocomplete', 'backbone'));
 
 			// ENQUEUE AND LOCALIZE MAIN JS FILE
-			wp_enqueue_script('usearch-script', WPUS_BASE.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+			wp_enqueue_script('usearch-script', WPUS_DIR_PATH.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 
 			$options = get_option('wpus_options');
 
@@ -455,7 +446,7 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_localize_script('usearch-script', 'usearch_script', $params);
 
 			// ENQUEUE STYLES
-			wp_enqueue_style('usearch-bar', WPUS_BASE.'css/visualsearch.css');
+			wp_enqueue_style('usearch-bar', WPUS_DIR_PATH.'css/visualsearch.css');
 		}
 
 		/**
@@ -604,7 +595,7 @@ if(!class_exists("WPUltimateSearch")) :
 			{
 				die ('Busted!');
 			}
-			
+
 			if(class_exists("WPUltimateSearchPro")) {
 				WPUltimateSearchPro::execute_query_pro($searcharray);
 			} else {
@@ -612,6 +603,9 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 		}
 
+		/**
+		 * @param $searcharray
+		 */
 		public function execute_query_basic($searcharray) {
 
 			global $wpdb; // load the database wrapper
@@ -619,8 +613,8 @@ if(!class_exists("WPUltimateSearch")) :
 			foreach($searcharray as $index) { // iterate through the search query array and separate the taxonomies into their own array
 				foreach($index as $facet => $data) {
 					$facet = $wpdb->escape($facet);
-			//		$data = $wpdb->escape($data);			//	@todo find an escape method that doesn't break strings encased in quotes. not a huge deal since we're breaking all
-															//	strings apart anyway (so sql injection is impossible)
+					//		$data = $wpdb->escape($data); //	@todo find an escape method that doesn't break strings encased in quotes. not a huge deal since we're breaking all
+					//	strings apart anyway (so sql injection is impossible)
 					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
 
 					switch($type) {
@@ -629,7 +623,9 @@ if(!class_exists("WPUltimateSearch")) :
 							break;
 						case "taxonomy" :
 							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
-							if($facet == "tag") $facet = "post_tag";
+							if($facet == "tag") {
+								$facet = "post_tag";
+							}
 							if(!isset($taxonomies[$facet])) {
 								$taxonomies[$facet] = "'".$data."'"; // if it's the first parameter, don't prefix with a comma
 							} else {
@@ -668,8 +664,8 @@ if(!class_exists("WPUltimateSearch")) :
 				}
 			}
 			$querystring .= "WHERE "; // the SELECT part of the query told us *what* to grab, the WHERE part tells us which posts to grab it from
-			if(isset($keywords)) // if there are keywords, select posts where any of the keywords appear in either the title or post body
-			{
+			// if there are keywords, select posts where any of the keywords appear in either the title or post body
+			if(isset($keywords)) {
 				for($i = 0; $i < count($keywords); $i++) {
 					$querystring .= "(lower(post_content) LIKE '%{$keywords[$i]}%' ";
 					$querystring .= "OR lower(post_title) LIKE '%{$keywords[$i]}%') ";
@@ -708,13 +704,12 @@ if(!class_exists("WPUltimateSearch")) :
 
 			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
 		}
-	} // END WPUltimateSearch CLASS
-endif; // END if(!class_exists("WPUltimateSearch"))
+	}
+endif;
 
 /**
  *  GLOBAL FUNCTIONS AND TEMPLATE TAGS
  */
-
 if(class_exists("WPUltimateSearch")) {
 	$wp_ultimate_search = new WPUltimateSearch();
 
@@ -736,24 +731,14 @@ if(class_exists("WPUltimateSearch")) {
 		$wp_ultimate_search->search_form_template_tag();
 	}
 
-	/* INCLUDES */
-	require_once('wpus-widget.php'); // include widget file
-
-	if(is_admin()) {
-		require_once('views/wpus-options.php'); // include options file
-	}
-
-	if(file_exists( WP_PLUGIN_DIR . '/wp-ultimate-search-pro/wp-ultimate-search-pro.php')) {
-		require_once(WP_PLUGIN_DIR . '/wp-ultimate-search-pro/wp-ultimate-search-pro.php');
-		$wp_ultimate_search_pro = new WPUltimateSearchPro();
-	}
-
 	/**
 	 * make options public
 	 *
 	 * @param $option
 	 *
 	 * @return bool
+	 *
+	 * @todo move inside class
 	 */
 	function wpus_option($option) {
 		$options = get_option('wpus_options');
@@ -764,5 +749,3 @@ if(class_exists("WPUltimateSearch")) {
 		}
 	}
 }
-
-?>
