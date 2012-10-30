@@ -59,6 +59,10 @@ Post your questions in the support forum.
 
 == Changelog ==
 
+= 0.4 =
+* Can search post tags
+* Optimized database interaction
+
 = 0.3 =
 * Added options page
 * Ability to search within shortcodes
