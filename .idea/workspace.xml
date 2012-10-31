@@ -1,29 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b6e9f8a0-503c-424e-a369-c10dcfe7f518" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\embed\icons" afterPath="" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\embed" afterPath="" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\img\embed\icons\cancel_search.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\img\embed\icons\icons.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\img\embed\icons\search_glyph.png" afterPath="" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\img\embed\icons" afterPath="" />
-      <change type="DELETED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\img\embed" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/visualsearch.css" afterPath="$PROJECT_DIR$/css/visualsearch.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/wpus-options.css" afterPath="$PROJECT_DIR$/css/wpus-options.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/wpus-options.php" afterPath="$PROJECT_DIR$/views/wpus-options.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/wpus-results-template.php" afterPath="$PROJECT_DIR$/views/wpus-results-template.php" />
+    <list default="true" readonly="true" id="b6e9f8a0-503c-424e-a369-c10dcfe7f518" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/wp-ultimate-search.php" afterPath="$PROJECT_DIR$/wp-ultimate-search.php" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\wpus-widget.php" afterPath="$PROJECT_DIR$/views/wpus-widget.php" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\ajax-loader.gif" afterPath="$PROJECT_DIR$/img/ajax-loader.gif" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\embed\icons\cancel_search.png" afterPath="$PROJECT_DIR$/img/cancel_search.png" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\embed\icons\icons.png" afterPath="$PROJECT_DIR$/img/icons.png" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\embed\icons\search_glyph.png" afterPath="$PROJECT_DIR$/img/search_glyph.png" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\tick.png" afterPath="$PROJECT_DIR$/img/tick.png" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images\tooltip.png" afterPath="$PROJECT_DIR$/img/tooltip.png" />
-      <change type="MOVED" beforePath="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk\images" afterPath="$PROJECT_DIR$/img" />
     </list>
     <ignored path="trunk.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -74,8 +54,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="width" value="1382" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -119,7 +99,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -140,6 +119,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -231,7 +211,7 @@
     <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
       <method />
     </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" server_id="f81b4650-ad23-495d-9e50-8b82fe2eb409" server_name="ultimatesearch.mindsharelabs.com (siteroot)">
       <method />
     </configuration>
     <list size="0" />
@@ -255,55 +235,57 @@
     <option name="IGNORE_EXTERNALS" value="false" />
     <configuration useDefault="false">C:\Users\mindshare\AppData\Roaming\Subversion</configuration>
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+    <supportedVersion>125</supportedVersion>
   </component>
   <component name="SvnFileUrlMappingImpl">
     <option name="myMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
-          <option name="myCopyRoot" value="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
+          <option name="myVcsRoot" value="S:\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
+          <option name="myCopyRoot" value="S:\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
         </SvnCopyRootSimple>
       </list>
     </option>
     <option name="myMoreRealMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
-          <option name="myCopyRoot" value="D:\share\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
+          <option name="myVcsRoot" value="S:\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
+          <option name="myCopyRoot" value="S:\Projects\svn.wp-plugins.org\wp-ultimate-search\trunk" />
         </SvnCopyRootSimple>
       </list>
     </option>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="b6e9f8a0-503c-424e-a369-c10dcfe7f518" name="Default" comment="" />
       <created>1351616551702</created>
       <updated>1351616551702</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.0867679" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2527115" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.670282" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.4273319" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.31236443" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25681818" sideWeight="0.9147541" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.670282" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25681818" sideWeight="0.9147541" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.0852459" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25245902" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -359,126 +341,117 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/css/visualsearch.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="23" selection-start="286" selection-end="286" vertical-scroll-proportion="0.02560241">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/wpus-options.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="0" selection-start="335" selection-end="335" vertical-scroll-proportion="0.2816265">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="0" selection-start="289" selection-end="289" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/main-admin.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="0" selection-start="42" selection-end="42" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/jquery.tipTip.minified.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <marker date="1351612110000" expanded="false" signature="1281:1291" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/backbone-min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/visualsearch.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/readme.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="114" selection-start="1862" selection-end="1862" vertical-scroll-proportion="0.33947772">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/wpus-results-template.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="39" selection-start="75" selection-end="75" vertical-scroll-proportion="0.042983565">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../svn.mindsharestudios.com/mcms-api/trunk/mcms-api.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="0" selection-start="2536" selection-end="2672" vertical-scroll-proportion="0.58027816">
-          <folding>
-            <element signature="e#6#347#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/wpus-widget.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="11" selection-start="149" selection-end="149" vertical-scroll-proportion="-4.576923">
-          <folding>
-            <element signature="e#6#46#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/wpus-options.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="463" column="31" selection-start="14569" selection-end="14569" vertical-scroll-proportion="0.33278957">
+        <state line="5" column="22" selection-start="66" selection-end="66" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#6#43#0" expanded="true" />
-            <marker date="1351637331841" expanded="true" signature="4598:4901" placeholder="..." />
-            <marker date="1351637331841" expanded="true" signature="4632:4773" placeholder="..." />
-            <marker date="1351637331841" expanded="true" signature="5124:5166" placeholder="..." />
-            <marker date="1351637331841" expanded="true" signature="5547:6211" placeholder="..." />
-            <marker date="1351637331841" expanded="true" signature="5614:5673" placeholder="{...}" />
-            <marker date="1351637331841" expanded="true" signature="5733:5953" placeholder="{...}" />
-            <marker date="1351637331841" expanded="true" signature="5798:5868" placeholder="{...}" />
-            <marker date="1351637331841" expanded="true" signature="5874:5947" placeholder="{...}" />
-            <marker date="1351637331841" expanded="true" signature="5998:6183" placeholder="{...}" />
-            <marker date="1351637331841" expanded="true" signature="6404:7964" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="4598:4901" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="4632:4773" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="5124:5166" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="5547:6211" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="5614:5673" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5733:5953" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5798:5868" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5874:5947" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5998:6183" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="6404:7964" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/mindshare-auto-update/mindshare-auto-update.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="14" selection-start="1247" selection-end="1247" vertical-scroll-proportion="-3.9435737">
-          <folding>
-            <element signature="e#6#482#0" expanded="true" />
-          </folding>
+        <state line="57" column="15" selection-start="1224" selection-end="1224" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/visualsearch.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="23" selection-start="286" selection-end="286" vertical-scroll-proportion="0.02560241" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/wpus-options.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="0" selection-start="335" selection-end="335" vertical-scroll-proportion="0.2816265" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="0" selection-start="289" selection-end="289" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main-admin.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="0" selection-start="42" selection-end="42" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/jquery.tipTip.minified.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/backbone-min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/visualsearch.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/readme.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="114" selection-start="1862" selection-end="1862" vertical-scroll-proportion="0.33947772" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/wpus-results-template.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="39" selection-start="75" selection-end="75" vertical-scroll-proportion="0.042983565" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../svn.mindsharestudios.com/mcms-api/trunk/mcms-api.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="93" column="0" selection-start="2536" selection-end="2672" vertical-scroll-proportion="0.58027816" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/wpus-widget.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="11" selection-start="149" selection-end="149" vertical-scroll-proportion="-4.576923" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/wp-ultimate-search.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="126" column="18" selection-start="4071" selection-end="4071" vertical-scroll-proportion="0.5188088">
+        <state line="24" column="26" selection-start="949" selection-end="949" vertical-scroll-proportion="-1.1065089">
           <folding>
             <element signature="e#6#256#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/wpus-options.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="928" column="52" selection-start="29832" selection-end="29844" vertical-scroll-proportion="0.08506224">
+          <folding>
+            <marker date="1351650518247" expanded="true" signature="4598:4901" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="4632:4773" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="5124:5166" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="5547:6211" placeholder="..." />
+            <marker date="1351650518247" expanded="true" signature="5614:5673" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5733:5953" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5798:5868" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5874:5947" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="5998:6183" placeholder="{...}" />
+            <marker date="1351650518247" expanded="true" signature="6404:7964" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/mindshare-auto-update/mindshare-auto-update.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="15" selection-start="1224" selection-end="1224" vertical-scroll-proportion="0.03353057">
+          <folding />
         </state>
       </provider>
     </entry>

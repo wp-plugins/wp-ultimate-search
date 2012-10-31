@@ -57,7 +57,7 @@ if(!defined('WPUS_PRO_SLUG')) {
 }
 
 if(!defined('WPUS_PRO_PATH')) {
-	define('WPUS_PRO_PATH', WPUS_DIR_PATH.trailingslashit(WPUS_PRO_SLUG));
+	define('WPUS_PRO_PATH', str_replace(WPUS_PLUGIN_SLUG, WPUS_PRO_SLUG, WPUS_DIR_PATH));
 }
 
 if(!defined('WPUS_PRO_FILE')) {
@@ -87,6 +87,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 			require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
 			$options_page = new WPUltimateSearchOptions();
+
 			add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
 			add_action('admin_init', array($options_page, 'register_settings'));
 
@@ -124,7 +125,7 @@ if(!class_exists("WPUltimateSearch")) :
 		function init() {
 			if(class_exists('WPUltimateSearchPro')) {
 				require_once(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
-				//new WPUltimateSearchPro();
+				new WPUltimateSearchPro();
 			}
 		}
 
@@ -132,9 +133,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Create search results page
 		 *
-		 *
 		 * When the plugin is first activated, create a /search/ page with the results shortcode.
-		 *
 		 *
 		 */
 		public function activation_hook() {
@@ -424,12 +423,12 @@ if(!class_exists("WPUltimateSearch")) :
 		public function register_scripts() {
 
 			// ENQUEUE VISUALSEARCH SCRIPTS
-			wp_enqueue_script('underscore', WPUS_DIR_PATH.'js/underscore-min.js');
-			wp_enqueue_script('backbone', WPUS_DIR_PATH.'js/backbone-min.js', array('underscore'));
-			wp_enqueue_script('visualsearch', WPUS_DIR_PATH.'js/visualsearch.js', array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-autocomplete', 'backbone'));
+			wp_enqueue_script('underscore', WPUS_DIR_URL.'js/underscore-min.js');
+			wp_enqueue_script('backbone', WPUS_DIR_URL.'js/backbone-min.js', array('underscore'));
+			wp_enqueue_script('visualsearch', WPUS_DIR_URL.'js/visualsearch.js', array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-autocomplete', 'backbone'));
 
 			// ENQUEUE AND LOCALIZE MAIN JS FILE
-			wp_enqueue_script('usearch-script', WPUS_DIR_PATH.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+			wp_enqueue_script('usearch-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 
 			$options = get_option('wpus_options');
 
@@ -446,7 +445,7 @@ if(!class_exists("WPUltimateSearch")) :
 			wp_localize_script('usearch-script', 'usearch_script', $params);
 
 			// ENQUEUE STYLES
-			wp_enqueue_style('usearch-bar', WPUS_DIR_PATH.'css/visualsearch.css');
+			wp_enqueue_style('usearch-bar', WPUS_DIR_URL.'css/visualsearch.css');
 		}
 
 		/**
