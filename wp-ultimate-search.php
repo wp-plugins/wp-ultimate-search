@@ -27,8 +27,11 @@ Author URI: http://mindsharelabs.com/
  * GNU General Public License for more details.
  * **********************************************************************
  *
- * @todo      add protected var options, reduce calls to get_option
  * @todo      use WPUS_PLUGIN_SLUG
+ * @todo      replace all class_exists('WPUltimateSearchPro') with better mechanism for testing pro
+ * @todo      move all pro functions out of options page php file into this one
+ * @todo      setup auto remote install + acivation
+ * @todo      make sure pro always activates
  */
 
 /* CONSTANTS */
@@ -83,7 +86,11 @@ if(!function_exists('add_action')) {
 if(!class_exists("WPUltimateSearch")) :
 	class WPUltimateSearch {
 
+		public $options;
+
 		function __construct() {
+
+			$this->options = get_option('wpus_options');
 
 			require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
 			$options_page = new WPUltimateSearchOptions();
@@ -91,7 +98,6 @@ if(!class_exists("WPUltimateSearch")) :
 			add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
 			add_action('admin_init', array($options_page, 'register_settings'));
 
-			//add_action('admin_menu', array($this, 'admin_menu'));
 			add_action('init', array($this, 'init'));
 
 			// REGISTER AJAX FUNCTIONS WITH ADMIN-AJAX
@@ -116,10 +122,6 @@ if(!class_exists("WPUltimateSearch")) :
 		function wpus_register_widgets() {
 			require_once(WPUS_DIR_PATH.'views/wpus-widget.php'); // include widget file
 			register_widget('wpultimatesearchwidget');
-		}
-
-		function admin_menu() {
-
 		}
 
 		function init() {
@@ -319,7 +321,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return array
 		 */
 		private function get_enabled_facets() {
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			foreach($options["'taxonomies'"] as $taxonomy) {
 				if(!isset($taxonomy["'enabled'"])) {
@@ -352,7 +354,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return int|string
 		 */
 		protected function get_taxonomy_name($label) {
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			foreach($options["'taxonomies'"] as $taxonomy => $value) {
 				if($value["'label'"] == $label) {
@@ -373,7 +375,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return int|string
 		 */
 		protected function get_metafield_name($label) {
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			foreach($options["'metafields'"] as $metafield => $value) {
 				if($value["'label'"] == $label) {
@@ -394,7 +396,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return string
 		 */
 		protected function determine_facet_type($facet) {
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			if($facet == "text") {
 				return "text";
@@ -430,7 +432,7 @@ if(!class_exists("WPUltimateSearch")) :
 			// ENQUEUE AND LOCALIZE MAIN JS FILE
 			wp_enqueue_script('usearch-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			$params = array(
 				'ajaxurl'          => admin_url('admin-ajax.php'),
@@ -478,7 +480,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 */
 		public function search_results() {
 			// RENDER SEARCH RESULTS AREA
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			$the_results = '<div class="usearch_results">';
 			if($options['loading_animation'] == 'css3') {
@@ -505,7 +507,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Get values
 		 *
-		 *
 		 * This is called by main.js whenever an eligible facet is entered in the search
 		 * bar. Returns a comma-separated list of available terms for the facet.
 		 *
@@ -517,7 +518,7 @@ if(!class_exists("WPUltimateSearch")) :
 			} // if nothing's been set, we can exit
 			$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
 
-			$options = get_option('wpus_options');
+			$options = $this->options;
 
 			switch($type) {
 				case "taxonomy" :
