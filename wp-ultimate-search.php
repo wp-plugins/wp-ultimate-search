@@ -4,7 +4,7 @@ Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
 Version: 1.0
-Author: Bryce Corkins / Mindshare Studios, Inc.
+Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
 
@@ -31,7 +31,6 @@ Author URI: http://mindsharelabs.com/
  * @todo      replace all class_exists('WPUltimateSearchPro') with better mechanism for testing pro
  * @todo      move all pro functions out of options page php file into this one
  * @todo      setup auto remote install + acivation
- * @todo      make sure pro always activates
  */
 
 /* CONSTANTS */
@@ -80,31 +79,63 @@ if(!function_exists('add_action')) {
 	exit();
 }
 
+/*
+ * If WPUS Pro is available these hooks will handle activation/deactivation.
+ * These fail silently if the plugin isn't installed.
+ */
+if(!function_exists('activate_pro')) {
+	function activate_pro() {
+		if(is_plugin_inactive(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE)) {
+			add_action('update_option_active_plugins', 'activate_pro_callback', 1);
+		}
+	}
+}
+if(!function_exists('activate_pro_callback')) {
+	function activate_pro_callback() {
+		activate_plugin(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE);
+	}
+}
+if(!function_exists('deactivate_pro')) {
+	function deactivate_pro() {
+		if(is_plugin_active(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE)) {
+			add_action('update_option_active_plugins', 'deactivate_pro_callback', 1);
+		}
+	}
+}
+if(!function_exists('deactivate_pro_callback')) {
+	function deactivate_pro_callback() {
+		deactivate_plugins(WPUS_PRO_SLUG.'/'.WPUS_PRO_FILE);
+	}
+}
+
+register_activation_hook(__FILE__, 'activate_pro');
+register_deactivation_hook(__FILE__, 'deactivate_pro');
+
 /**
  *  WPUltimateSearch CONTAINER CLASS
  */
 if(!class_exists("WPUltimateSearch")) :
 	class WPUltimateSearch {
 
-		public $options;
+		public $options, $is_active;
 
 		function __construct() {
 
+			$this->is_active = FALSE;
 			$this->options = get_option('wpus_options');
 
 			require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
 			$options_page = new WPUltimateSearchOptions();
-
 			add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
 			add_action('admin_init', array($options_page, 'register_settings'));
 
 			add_action('init', array($this, 'init'));
 
 			// REGISTER AJAX FUNCTIONS WITH ADMIN-AJAX
-			add_action('wp_ajax_usearch_search', array($this, 'get_results'));
-			add_action('wp_ajax_nopriv_usearch_search', array($this, 'get_results')); // need this to serve non logged in users
-			add_action('wp_ajax_usearch_getvalues', array($this, 'get_values'));
-			add_action('wp_ajax_nopriv_usearch_getvalues', array($this, 'get_values')); // need this to serve non logged in users
+			add_action('wp_ajax_wpus_search', array($this, 'get_results'));
+			add_action('wp_ajax_nopriv_wpus_search', array($this, 'get_results')); // need this to serve non logged in users
+			add_action('wp_ajax_wpus_getvalues', array($this, 'get_values'));
+			add_action('wp_ajax_nopriv_wpus_getvalues', array($this, 'get_values')); // need this to serve non logged in users
 
 			// REGISTER SHORTCODES
 			add_shortcode(WPUS_PLUGIN_SLUG."-bar", array($this, 'search_form'));
@@ -125,9 +156,12 @@ if(!class_exists("WPUltimateSearch")) :
 		}
 
 		function init() {
-			if(class_exists('WPUltimateSearchPro')) {
-				require_once(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
+			if(file_exists(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php')) {
+				require(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
 				new WPUltimateSearchPro();
+			}
+			if($this->options['override_default']) {
+				add_filter('get_search_form', array($this, 'search_form'));
 			}
 		}
 
@@ -174,7 +208,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 * @return mixed
 		 */
 		private function highlightsearchterms($text, $keywords) {
-			return preg_replace('/('.implode('|', $keywords).')/i', '<strong class="usearch-highlight">$0</strong>', $text);
+			return preg_replace('/('.implode('|', $keywords).')/i', '<strong class="wpus-highlight">$0</strong>', $text);
 		}
 
 		/**
@@ -277,7 +311,7 @@ if(!class_exists("WPUltimateSearch")) :
 			echo '
 				<script type="text/javascript">
 				    /* <![CDATA[ */
-				    var usearch_response = {
+				    var wpus_response = {
 				            "'.$parameter.'":"'.$response.'"
 				    };
 				    /* ]]> */
@@ -292,22 +326,31 @@ if(!class_exists("WPUltimateSearch")) :
 		 * If there are results, load the appropriate results template and output
 		 * the search results. Send Analytics tracking beacon if enabled.
 		 *
-		 * @param $resultsarray
+		 * @param $results
 		 * @param $keywords
+		 *
+		 * @internal param $resultsarray
 		 */
-		protected function print_results($resultsarray, $keywords) {
-			if($resultsarray) { // if results were found, continue
+		protected function print_results($results, $keywords) {
+			if($results) {
+				ob_start();
+
 				if(file_exists(TEMPLATEPATH.'/wpus-results-template.php')) {
 					require(TEMPLATEPATH.'/wpus-results-template.php');
 				} else {
 					require(WPUS_DIR_PATH.'views/wpus-results-template.php');
 				}
-				if(wpus_option('track_events')) // if we're tracking searches as analytics events, pass the number of search results back to main.js
-				{
-					$this->ajax_response('numresults', count($resultsarray));
+				// if we're tracking searches as analytics events, pass the number of search results back to main.js
+				if(wpus_option('track_events')) {
+					$this->ajax_response('numresults', count($results));
 				}
-			} else { // if no results were found, let 'em know
-				echo wpus_option('no_results_msg');
+				$output = ob_get_clean();
+
+				if($keywords) {
+					echo $this->highlightsearchterms($output, $keywords);
+				} else {
+					echo $output;
+				}
 			}
 		}
 
@@ -323,21 +366,23 @@ if(!class_exists("WPUltimateSearch")) :
 		private function get_enabled_facets() {
 			$options = $this->options;
 
-			foreach($options["'taxonomies'"] as $taxonomy) {
-				if(!isset($taxonomy["'enabled'"])) {
-					break;
-				}
-				if(!class_exists("WPUltimateSearchPro") && $taxonomy["'label'"] == 'post_tag') {
-					$enabled_facets[] = 'tag';
-				} else {
-					$enabled_facets[] = $taxonomy["'label'"];
+			foreach($options["'taxonomies'"] as $taxonomy => $key) {
+				if($key["'enabled'"]) {
+					if($key["'label'"]) {
+						$enabled_facets[] = $key["'label'"];
+					} else {
+						$enabled_facets[] = $taxonomy;
+					}
 				}
 			}
-			foreach($options["'metafields'"] as $metafield) {
-				if(!isset($metafield["'enabled'"])) {
-					break;
+			foreach($options["'metafields'"] as $metafield => $key) {
+				if($key["'enabled'"]) {
+					if($key["'label'"]) {
+						$enabled_facets[] = $key["'label'"];
+					} else {
+						$enabled_facets[] = $metafield;
+					}
 				}
-				$enabled_facets[] = $metafield["'label'"];
 			}
 			return $enabled_facets;
 		}
@@ -361,6 +406,8 @@ if(!class_exists("WPUltimateSearch")) :
 					return $taxonomy;
 				}
 			}
+
+			return $label; // if no match found, try to use the label
 		}
 
 		/**
@@ -382,6 +429,8 @@ if(!class_exists("WPUltimateSearch")) :
 					return $metafield;
 				}
 			}
+
+			return $label; // if no match found, try to use the label
 		}
 
 		/**
@@ -403,12 +452,12 @@ if(!class_exists("WPUltimateSearch")) :
 			}
 
 			foreach($options["'taxonomies'"] as $taxonomy => $value) {
-				if($value["'label'"] == $facet) {
+				if($value["'label'"] == $facet || $taxonomy == $facet) {
 					return "taxonomy";
 				}
 			}
 			foreach($options["'metafields'"] as $metafield => $value) {
-				if($value["'label'"] == $facet) {
+				if($value["'label'"] == $facet || $metafield == $facet) {
 					return "metafield";
 				}
 			}
@@ -425,12 +474,26 @@ if(!class_exists("WPUltimateSearch")) :
 		public function register_scripts() {
 
 			// ENQUEUE VISUALSEARCH SCRIPTS
-			wp_enqueue_script('underscore', WPUS_DIR_URL.'js/underscore-min.js');
-			wp_enqueue_script('backbone', WPUS_DIR_URL.'js/backbone-min.js', array('underscore'));
-			wp_enqueue_script('visualsearch', WPUS_DIR_URL.'js/visualsearch.js', array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-autocomplete', 'backbone'));
+			//			wp_enqueue_script('underscore', WPUS_DIR_URL.'js/underscore-min.js');
+			//			wp_enqueue_script('backbone', WPUS_DIR_URL.'js/backbone-min.js', array('underscore'));
+			wp_enqueue_script('underscore');
+			wp_enqueue_script('backbone');
+			wp_enqueue_script(
+				'visualsearch',
+				WPUS_DIR_URL.'js/visualsearch.js',
+				array(
+					 'jquery',
+					 'jquery-ui-core',
+					 'jquery-ui-widget',
+					 'jquery-ui-position',
+					 'jquery-ui-autocomplete',
+					 'backbone',
+					 'underscore'
+				)
+			);
 
 			// ENQUEUE AND LOCALIZE MAIN JS FILE
-			wp_enqueue_script('usearch-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
+			wp_enqueue_script('wpus-script', WPUS_DIR_URL.'js/main.js', array('visualsearch'), '', wpus_option('scripts_in_footer'));
 
 			$options = $this->options;
 
@@ -444,10 +507,10 @@ if(!class_exists("WPUltimateSearch")) :
 				'resultspage'      => $options['results_page']
 			);
 
-			wp_localize_script('usearch-script', 'usearch_script', $params);
+			wp_localize_script('wpus-script', 'wpus_script', $params);
 
 			// ENQUEUE STYLES
-			wp_enqueue_style('usearch-bar', WPUS_DIR_URL.'css/visualsearch.css');
+			wp_enqueue_style('wpus-bar', WPUS_DIR_URL.'css/visualsearch.css');
 		}
 
 		/**
@@ -458,10 +521,7 @@ if(!class_exists("WPUltimateSearch")) :
 		public function search_form() {
 			$this->register_scripts();
 			// RENDER SEARCH FORM
-			ob_start(); //start output buffer: everything echoed will be sent to the ob instead of the browser.
-			echo '<div id="search_box_container"></div>';
-			$the_form = ob_get_clean(); // flush output buffer into variable
-			return $the_form;
+			return '<div id="search_box_container"></div>';
 		}
 
 		/**
@@ -480,17 +540,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 */
 		public function search_results() {
 			// RENDER SEARCH RESULTS AREA
-			$options = $this->options;
-
-			$the_results = '<div class="usearch_results">';
-			if($options['loading_animation'] == 'css3') {
-				$the_results .= '<div id="usearch_loading"></div>
-									<div id="usearch_loading1"></div>';
-			}
-
-			$the_results .= '<div id="usearch_response">&nbsp;</div>
-			</div>';
-			return $the_results;
+			return '<div id="wpus_response"></div>';
 		}
 
 		/**
@@ -498,9 +548,7 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 */
 		public function search_results_template_tag() {
-			echo '<div id="usearch_loading"></div>
-				<div id="usearch_loading1"></div>
-			<div id="usearch_response">&nbsp;</div>';
+			echo '<div id="wpus_response"></div>';
 		}
 
 		/**
@@ -516,6 +564,7 @@ if(!class_exists("WPUltimateSearch")) :
 			if(!isset($facet)) {
 				exit;
 			} // if nothing's been set, we can exit
+
 			$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
 
 			$options = $this->options;
@@ -553,6 +602,9 @@ if(!class_exists("WPUltimateSearch")) :
 					die();
 
 				case "metafield" :
+
+					$facet = $this->get_metafield_name($facet);
+
 					global $wpdb;
 
 					$querystring = "
@@ -577,17 +629,17 @@ if(!class_exists("WPUltimateSearch")) :
 		 * Get results
 		 *
 		 *
-		 * This is called by main.js when the usearch_search action is triggered. Gets
+		 * This is called by main.js when the wpus_search action is triggered. Gets
 		 * the query from the UI, reconstructs it into an array, builds and executes the
 		 * database query, and calls the function to output the results.
 		 *
 		 */
 		public function get_results() {
 
-			if(!isset($_GET['usearchquery'])) {
+			if(!isset($_GET['wpusquery'])) {
 				die(); // if no data has been entered, quit
 			} else {
-				$searcharray = $_GET['usearchquery'];
+				$searcharray = $_GET['wpusquery'];
 			}
 
 			$nonce = $_GET['searchNonce'];
@@ -613,6 +665,7 @@ if(!class_exists("WPUltimateSearch")) :
 			foreach($searcharray as $index) { // iterate through the search query array and separate the taxonomies into their own array
 				foreach($index as $facet => $data) {
 					$facet = $wpdb->escape($facet);
+
 					//		$data = $wpdb->escape($data); //	@todo find an escape method that doesn't break strings encased in quotes. not a huge deal since we're breaking all
 					//	strings apart anyway (so sql injection is impossible)
 					$type = $this->determine_facet_type($facet); // determine if we're dealing with a taxonomy or a metafield
@@ -623,9 +676,6 @@ if(!class_exists("WPUltimateSearch")) :
 							break;
 						case "taxonomy" :
 							$data = preg_replace('/_/', " ", $data); // in case there are underscores in the value (from a permalink), remove them
-							if($facet == "tag") {
-								$facet = "post_tag";
-							}
 							if(!isset($taxonomies[$facet])) {
 								$taxonomies[$facet] = "'".$data."'"; // if it's the first parameter, don't prefix with a comma
 							} else {
@@ -633,7 +683,7 @@ if(!class_exists("WPUltimateSearch")) :
 							}
 							break;
 						case "metafield" :
-							echo "WP Ultimate Search Pro is not installed or configured correctly.";
+							echo "I'm sorry but WP Ultimate Search Pro is currently not installed, configured incorrectly, or the plugin is disabled.";
 							die();
 					}
 				}
@@ -694,13 +744,13 @@ if(!class_exists("WPUltimateSearch")) :
 			$querystring .= "
 			AND $wpdb->posts.post_status = 'publish'"; // exclude drafts, scheduled posts, etc
 
-			//			echo $querystring; $wpdb->show_errors(); 		// for debugging, you can echo the completed query string and enable error reporting before it's executed
+			//echo $querystring; $wpdb->show_errors(); 		// for debugging, you can echo the completed query string and enable error reporting before it's executed
 
 			if(!isset($keywords)) {
 				$keywords = NULL;
 			}
 
-			$this->print_results($wpdb->get_results($querystring), $keywords); // format and output the search results
+			$this->print_results($wpdb->get_results($querystring, OBJECT), $keywords); // format and output the search results
 
 			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
 		}
@@ -711,6 +761,7 @@ endif;
  *  GLOBAL FUNCTIONS AND TEMPLATE TAGS
  */
 if(class_exists("WPUltimateSearch")) {
+
 	$wp_ultimate_search = new WPUltimateSearch();
 
 	/**
@@ -738,7 +789,7 @@ if(class_exists("WPUltimateSearch")) {
 	 *
 	 * @return bool
 	 *
-	 * @todo move inside class
+	 * @todo move inside class. also.. is this really necessary? I can't remember the inspiration
 	 */
 	function wpus_option($option) {
 		$options = get_option('wpus_options');

@@ -1,21 +1,26 @@
-<?php
-foreach($resultsarray as $item) {
-	//	if(wpus_option('search_shortcodes')) { // if we're searching shortcodes, render them before formatting
-	//		$excerpt = $this->wpus_strip_tags(apply_filters('the_content', $item->excerpt));
-	//	} else {
-	$excerpt = $this->wpus_strip_tags(apply_filters('strip_shortcodes', $item->excerpt));
-	//	}
-	$title = $item->post_title;
-	if($keywords) { // if there are keywords, highlight them in the excerpt and title
-		$excerpt = $this->highlightsearchterms($excerpt, $keywords);
-		$title = $this->highlightsearchterms($item->post_title, $keywords);
-	}
-	$catstring = $this->render_categories($item); ?>
+<?php if ($results): ?>
+	
+	<?php global $post; ?>
+	
+	<?php foreach ($results as $post): ?>
+		
+		<?php setup_postdata($post); ?>
 
-<div class="usearch-result">
-	<div class="usearch-meta">
-		<a href="<?php echo get_permalink($item->ID) ?>"><?php echo $title ?></a> <?php echo $catstring ?>
-	</div>
-	<div class="usearch-excerpt"><?php echo $excerpt ?></div>
-</div>
-<?php } ?>
+		<div class="post" id="post-<?php the_ID(); ?>">
+		<h2><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title(); ?>">
+		<?php the_title(); ?></a></h2>
+			<small><?php the_time('F jS, Y') ?> <!-- by <?php the_author() ?> --></small>
+			<div class="entry">
+				<?php the_excerpt(); ?>
+			</div>
+			<p class="postmetadata">Posted in <?php the_category(', ') ?> | <?php edit_post_link('Edit', '', ' | '); ?>  
+			<?php comments_popup_link('No Comments »', '1 Comment »', '% Comments »'); ?></p>
+		</div>
+		
+	<?php endforeach; ?>
+	
+<?php else : ?>
+	
+		<p><?php echo wpus_option('no_results_msg'); ?></p>
+		
+<?php endif; ?>

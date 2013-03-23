@@ -2,9 +2,9 @@
 Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
-Requires at least: 3.0
-Tested up to: 3.4.1
-Stable tag: 0.3
+Requires at least: 3.4.1
+Tested up to: 3.5.1
+Stable tag: 1.0
  
 Advanced faceted auto completing AJAX search and filter utility.
 
@@ -19,7 +19,6 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Searches post title and body content
 * Can search by multiple keywords, and by full phrases
 * Highlights search terms in results
-* Searches inside of shortcodes
 * Option to send search queries as events to your Google Analytics account
 * Facets by post category
 * Can search in multiple categories (OR search)
@@ -27,9 +26,7 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
 * Bypasses WordPress’ built-in search functions and conducts direct database queries for low overhead and high flexibility
 
-Many new features coming quickly, stay tuned.
-
-Please be advised that this is a beta release and not all features are available yet. We'll be updating the plugin heavily over the coming weeks, so check back for updates. Please let us know if you encounter any bugs, or have any suggestions for improvement.
+Premium version now supports the ability to search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields)
 
 == Installation ==
 
@@ -37,27 +34,32 @@ Please be advised that this is a beta release and not all features are available
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Add a shortcode to a post, use the template tag in your theme, or use the sidebar widget.
 
-<h4>Shortcode</h4>
-During this development period, the shortcode is used in two parts: the search bar, and the search results. Put `[wp-ultimate-search-bar]` where you’d like the search bar, and `[wp-ultimate-search-results]` where you’d like the results to appear. No options (…yet).
-
-<h4>Template tag</h4>
-Call the search bar with `wp_ultimate_search_bar()`
-Render the search results area with `wp_ultimate_search_results()`
-
-No parameters yet.
+For additional information, [visit our website](http://mindsharelabs.com/)
 
 == Frequently Asked Questions ==
 
-Post your questions in the support forum.
+Post your questions in the [support forum](http://mindsharelabs.com/support/).
 
 
 == Screenshots ==
 
 1. Search bar with results.
 
-`/tags/0.2/screenshot-1.jpg`
+`/tags/1.0/screenshot-1.jpg`
+
+1. Settings screen showing taxonomy options.
+
+`/tags/1.0/screenshot-2.jpg`
 
 == Changelog ==
+
+= 1.0 =
+* Option to replace WordPress default search
+* Ability to search in custom taxonomies (with upgrade)
+* Ability to search in post meta fields (with upgrade)
+* Searches now generate permalinks
+* Supports user-created search results templates
+* Many more tweaks and optimizations
 
 = 0.4 =
 * Can search post tags
@@ -79,9 +81,5 @@ Post your questions in the support forum.
 
 == To Do ==
 
-* Search Advanced Custom Fields data (and other post meta)
-* Permalinks for search results
-* Search results tempting
-* Load search results page if results area is not already loaded
 * Caching of meta data
 * Sortable results

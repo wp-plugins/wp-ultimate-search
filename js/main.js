@@ -136,14 +136,14 @@
 jQuery(document).ready(function($) {
 
 	var opts = {
-		lines:     9, // The number of lines to draw
-		length:    2, // The length of each line
-		width:     2, // The line thickness
-		radius:    2, // The radius of the inner circle
+		lines:     16, // The number of lines to draw
+		length:    8, // The length of each line
+		width:     3, // The line thickness
+		radius:    10, // The radius of the inner circle
 		corners:   1, // Corner roundness (0..1)
 		rotate:    0, // The rotation offset
 		color:     '#444', // #rgb or #rrggbb
-		speed:     2.0, // Rounds per second
+		speed:     1.6, // Rounds per second
 		trail:     60, // Afterglow percentage
 		shadow:    false, // Whether to render a shadow
 		hwaccel:   true, // Whether to use hardware acceleration
@@ -164,17 +164,11 @@ jQuery(document).ready(function($) {
 				//		  	enable the following line for search query debugging:
 				//			console.log(["query", searchCollection.facets(), query]);
 
-				$("#vs-cancel").addClass("hidden");
-				var target = document.getElementById('vs-cancel');
+				//$(".VS-cancel-search-box").addClass("hidden");
+				var target = document.getElementById('wpus_response');
 				var spinner = new Spinner(opts).spin(target);
 
-				if(usearch_script.loadinganimation == "spinner") {
-					$("#usearch_response").addClass("loading");
-				} else if(usearch_script.loadinganimation == "css3") {
-					$("#usearch_loading").addClass("active");
-					$("#usearch_loading1").addClass("active");
-				}
-				$(".usearch-result").animate({
+				$("#wpus_response").animate({
 					opacity: 0.5
 				}, 500, function() {
 
@@ -189,34 +183,28 @@ jQuery(document).ready(function($) {
 					}
 				}
 				var data = {
-					action:       "usearch_search",
-					usearchquery: searchCollection.facets(),
-					searchNonce:  usearch_script.searchNonce
+					action:       "wpus_search",
+					wpusquery: searchCollection.facets(),
+					searchNonce:  wpus_script.searchNonce
 				};
-				if($("#usearch_response").length > 0) {
-					$.get(usearch_script.ajaxurl, data, function(response_from_get_results) {
+				if($("#wpus_response").length > 0) {
+					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 						$('.iosnotice').remove();
-						VS.app.searcher.navigate("search/" + searchuri);
-						$("#vs-cancel").removeClass("hidden");
+						VS.app.searcher.navigate("/" + searchuri);
+						//$(".VS-cancel-search-box").removeClass("hidden");
 						spinner.stop();
-						$("#usearch_response").html(response_from_get_results);
-						if(usearch_script.loadinganimation == "spinner") {
-							$("#usearch_response").removeClass("loading");
-						} else if(usearch_script.loadinganimation == "css3") {
-							$("#usearch_loading").removeClass("active");
-							$("#usearch_loading1").removeClass("active");
-						}
-						$(".usearch-result").animate({
+						$("#wpus_response").html(response_from_get_results);
+						$("#wpus_response").animate({
 							opacity: 1
 						}, 500, function() {
 
 						});
-						if(usearch_script.trackevents == true) {
-							_gaq.push(['_trackEvent', usearch_script.eventtitle, 'Submit', searchCollection.serialize(), parseInt(usearch_response.numresults)]);
+						if(wpus_script.trackevents == true) {
+							_gaq.push(['_trackEvent', wpus_script.eventtitle, 'Submit', searchCollection.serialize(), parseInt(wpus_response.numresults)]);
 						}
 					});
 				} else {
-					window.location.replace(usearch_script.resultspage + "/#search/" + searchuri);
+					window.location.replace(wpus_script.resultspage + "#" + searchuri);
 				}
 			},
 			valueMatches: function(category, searchTerm, callback) {
@@ -224,39 +212,32 @@ jQuery(document).ready(function($) {
 					return;
 				}
 				var data = {
-					action: "usearch_getvalues",
+					action: "wpus_getvalues",
 					facet:  category
 				};
-				$("#vs-cancel").addClass("hidden");
-				var target = document.getElementById('vs-cancel');
-				var spinner = new Spinner(opts).spin(target);
-				$.get(usearch_script.ajaxurl, data, function(response_from_get_values) {
+				//$(".VS-cancel-search-box").addClass("hidden");
+				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
 					if(response_from_get_values) {
 						callback($.parseJSON(response_from_get_values));
 					}
-					$("#vs-cancel").removeClass("hidden");
-					spinner.stop();
+					//$(".VS-cancel-search-box").removeClass("hidden");
 				});
 			},
 			facetMatches: function(callback) {
-				var json_str = usearch_script.enabledfacets.replace(/&quot;/g, '"');
+				var json_str = wpus_script.enabledfacets.replace(/&quot;/g, '"');
 				callback($.parseJSON(json_str), {
 					preserveOrder: true
 				});
 			}
 		}
 	});
-	if(/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-		$('.search_input').addClass("mobiletweak");			// expand the initial input window to 100% on mobile browsers
-		$('.search_input input').addClass("mobiletweak");
-	}
 	if(/webOS|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 		$('.VS-search').append("<div class='iosnotice'>Due to a bug in mobile Safari, the search box may not function properly. To fix this: exit Safari and double-press your 'Home' button to access the app-switcher. Press and hold the Safari icon until the red 'close' icon appears. Close Safari, and open it again. Problem should be solved :)</div>");
 	}
 
 	VS.utils.Searcher = Backbone.Router.extend({
 		routes: {
-			"search/:query": "search"  // matches http://ultimatesearch.mindsharelabs.com/#search/query
+			"*actions": "search"  // matches http://ultimatesearch.mindsharelabs.com#/query
 		},
 		search: function(query) {
 
@@ -271,46 +252,34 @@ jQuery(document).ready(function($) {
 				queryarray[i][temparray[0]] = decodeURI(temparray[1]).replace(/\+/g, " ");
 			});
 			// enable the following line for search query debugging:
-			console.log(["query", queryarray, query]);
+			// console.log(["query", queryarray, query]);
 
-			$("#vs-cancel").addClass("hidden");
-			var target = document.getElementById('vs-cancel');
+			//$(".VS-cancel-search-box").addClass("hidden");
+			var target = document.getElementById('#wpus_response');
 			var spinner = new Spinner(opts).spin(target);
 
-			if(usearch_script.loadinganimation == "spinner") {
-				$("#usearch_response").addClass("loading");
-			} else if(usearch_script.loadinganimation == "css3") {
-				$("#usearch_loading").addClass("active");
-				$("#usearch_loading1").addClass("active");
-			}
-			$(".usearch-result").animate({
+			$("#wpus_response").animate({
 				opacity: 0.5
 			}, 500, function() {
 
 			});
 			var data = {
-				action:       "usearch_search",
-				usearchquery: queryarray,
-				searchNonce:  usearch_script.searchNonce
+				action:       "wpus_search",
+				wpusquery: queryarray,
+				searchNonce:  wpus_script.searchNonce
 			};
-			$.get(usearch_script.ajaxurl, data, function(response_from_get_results) {
+			$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 				$('.iosnotice').remove();
-				$("#vs-cancel").removeClass("hidden");
+				//$(".VS-cancel-search-box").removeClass("hidden");
 				spinner.stop();
-				$("#usearch_response").html(response_from_get_results);
-				if(usearch_script.loadinganimation == "spinner") {
-					$("#usearch_response").removeClass("loading");
-				} else if(usearch_script.loadinganimation == "css3") {
-					$("#usearch_loading").removeClass("active");
-					$("#usearch_loading1").removeClass("active");
-				}
-				$(".usearch-result").animate({
+				$("#wpus_response").html(response_from_get_results);
+				$("#wpus_response").animate({
 					opacity: 1
 				}, 500, function() {
 
 				});
-				if(usearch_script.trackevents == true) {
-					_gaq.push(['_trackEvent', usearch_script.eventtitle, 'Submit', searchCollection.serialize(), parseInt(usearch_response.numresults)]);
+				if(wpus_script.trackevents == true) {
+					_gaq.push(['_trackEvent', wpus_script.eventtitle, 'Submit', searchCollection.serialize(), parseInt(wpus_response.numresults)]);
 				}
 			});
 		}
