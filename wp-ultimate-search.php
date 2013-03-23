@@ -375,12 +375,14 @@ if(!class_exists("WPUltimateSearch")) :
 					}
 				}
 			}
-			foreach($options["'metafields'"] as $metafield => $key) {
-				if($key["'enabled'"]) {
-					if($key["'label'"]) {
-						$enabled_facets[] = $key["'label'"];
-					} else {
-						$enabled_facets[] = $metafield;
+			if($options["'metafields'"]){
+				foreach($options["'metafields'"] as $metafield => $key) {
+					if($key["'enabled'"]) {
+						if($key["'label'"]) {
+							$enabled_facets[] = $key["'label'"];
+						} else {
+							$enabled_facets[] = $metafield;
+						}
 					}
 				}
 			}
@@ -456,9 +458,11 @@ if(!class_exists("WPUltimateSearch")) :
 					return "taxonomy";
 				}
 			}
-			foreach($options["'metafields'"] as $metafield => $value) {
-				if($value["'label'"] == $facet || $metafield == $facet) {
-					return "metafield";
+			if($options["'metafields'"]){
+				foreach($options["'metafields'"] as $metafield => $value) {
+					if($value["'label'"] == $facet || $metafield == $facet) {
+						return "metafield";
+					}
 				}
 			}
 		}
