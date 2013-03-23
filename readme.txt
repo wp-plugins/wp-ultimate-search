@@ -47,9 +47,13 @@ Post your questions in the [support forum](http://mindsharelabs.com/support/).
 
 `/tags/1.0/screenshot-1.jpg`
 
-1. Settings screen showing taxonomy options.
+2. Settings screen showing taxonomy options.
 
 `/tags/1.0/screenshot-2.jpg`
+
+3. Also compatible with touch devices.
+
+`/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
 
