@@ -2,6 +2,10 @@
 	position: relative
 }
 
+.wpus-highlight {
+	font-weight: bold;
+}
+
 #wpus_response.loading {
 	background-image: url('../img/ajax-loader.gif') no-repeat center 30px;
 	min-height: 62px;
@@ -114,6 +118,14 @@
 	-webkit-box-shadow: inset 0px 0px 3px #acf;
 	-moz-box-shadow: inset 0px 0px 3px #acf;
 	box-shadow: inset 0px 0px 3px #acf;
+}
+.VS-search .VS-placeholder {
+      position: relative;
+      margin: 0 20px 0 22px;
+      color: #808080;
+}
+  .VS-search .VS-search-box.VS-focus .VS-placeholder {
+      display: none;
 }
 .VS-search .VS-search-inner {
 	position: relative;
@@ -249,8 +261,14 @@
 	margin-top: -4px;
 	width: 10px;
 	z-index: 100;
-	min-width: 4px;
+	min-width: 20px;
 	position: relative;
+	border: none;
+	outline: 0;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	}
 }
 .VS-search .search_input.is_editing input {
 	color: #202020;

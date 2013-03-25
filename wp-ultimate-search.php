@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.0
+Version: 1.0.1
 Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
@@ -213,35 +213,6 @@ if(!class_exists("WPUltimateSearch")) :
 
 		/**
 		 *
-		 * Render categories
-		 *
-		 *
-		 * Takes a post object returned from wpdb->get_results() and returns a string
-		 * with all categories assigned to the post.
-		 *
-		 * @param $array
-		 *
-		 * @return string
-		 */
-		private function render_categories($array) {
-			if(!($categories = get_the_category($array->ID))) {
-				return;
-			}
-
-			if(count($categories) > 1) {
-				$catstring = 'in categories: ';
-			} elseif(count($categories) == 1) {
-				$catstring = 'in category: ';
-			}
-			foreach($categories as $category) {
-				$catstring .= '<a href="'.get_category_link($category->term_id).'" title="'.esc_attr(sprintf(__("View all posts in %s"), $category->name)).'">'.$category->cat_name.'</a>'.', ';
-			}
-
-			return trim($catstring, ', ');
-		}
-
-		/**
-		 *
 		 * Convert a string to an array of keywords
 		 *
 		 *
@@ -344,13 +315,16 @@ if(!class_exists("WPUltimateSearch")) :
 				if(wpus_option('track_events')) {
 					$this->ajax_response('numresults', count($results));
 				}
-				$output = ob_get_clean();
+				
+				echo ob_get_clean();
+
+				/* @todo add an option to switch to non post_object based results output (just title and excerpt)
 
 				if($keywords) {
 					echo $this->highlightsearchterms($output, $keywords);
 				} else {
 					echo $output;
-				}
+				} */
 			}
 		}
 
@@ -525,7 +499,12 @@ if(!class_exists("WPUltimateSearch")) :
 		public function search_form() {
 			$this->register_scripts();
 			// RENDER SEARCH FORM
-			return '<div id="search_box_container"></div>';
+			return '<div id="search_box_container"><div id="search"><div class="VS-search">
+			  <div class="VS-search-box-wrapper VS-search-box">
+			    <div class="VS-icon VS-icon-search"></div>
+			    <div class="VS-icon VS-icon-cancel VS-cancel-search-box" title="clear search"></div>
+			  </div>
+			</div></div></div>';
 		}
 
 		/**
@@ -534,7 +513,12 @@ if(!class_exists("WPUltimateSearch")) :
 		 */
 		public function search_form_template_tag() {
 			$this->register_scripts();
-			echo '<div id="search_box_container"></div>';
+			echo '<div id="search_box_container"><div id="search"><div class="VS-search">
+			  <div class="VS-search-box-wrapper VS-search-box">
+			    <div class="VS-icon VS-icon-search"></div>
+			    <div class="VS-icon VS-icon-cancel VS-cancel-search-box" title="clear search"></div>
+			  </div>
+			</div></div></div>';
 		}
 
 		/**

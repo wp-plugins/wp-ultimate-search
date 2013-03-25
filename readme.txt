@@ -4,7 +4,7 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
 Requires at least: 3.4.1
 Tested up to: 3.5.1
-Stable tag: 1.0
+Stable tag: 1.0.1
  
 Advanced faceted auto completing AJAX search and filter utility.
 
@@ -56,6 +56,16 @@ Post your questions in the [support forum](http://mindsharelabs.com/support/).
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.0.1 =
+
+* Bugfix release:
+* Minified spin.js
+* Moved result highlighting out of php (buggy) and into JS
+* Fixed bug where warnings would be issued on sites with no eligible meta fields
+* Removed debugging function in visualsearch.js that occasionally caused conflicts with other scripts
+* Updated visualsearch.js to v0.4.0
+* Added default styling to search bar so bar will be displayed before scripts have loaded 
 
 = 1.0 =
 * Option to replace WordPress default search
