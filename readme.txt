@@ -4,7 +4,7 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
 Requires at least: 3.4.1
 Tested up to: 3.5.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
  
 Advanced faceted auto completing AJAX search and filter utility.
 
@@ -24,7 +24,7 @@ Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 * Can search in multiple categories (OR search)
 * Category options are dynamically generated and autocompleted as you type
 * Attractive and lightweight interface based on jQuery, Backbone.js, and the VisualSearch.js library
-* Bypasses WordPress’ built-in search functions and conducts direct database queries for low overhead and high flexibility
+* Customizable results template using standard WordPress functions
 
 Premium version now supports the ability to search through an unlimited number of user-specified taxonomies and meta fields (including data contained in Advanced Custom Fields)
 
@@ -56,6 +56,14 @@ Post your questions in the [support forum](http://mindsharelabs.com/support/).
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.0.2 =
+
+WARNING: If you encounter any problems with this update, check the "Reset options" box and hit Save Changes to restore initial settings.
+
+* Increased load times
+* Silenced PHP notices when wp_debug was turned on
+* Fixed bug that prevented option saving with some database configurations
 
 = 1.0.1 =
 

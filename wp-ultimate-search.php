@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.0.1
+Version: 1.0.2
 Author: Mindshare Studios
 Author URI: http://mindsharelabs.com/
 */
@@ -124,10 +124,12 @@ if(!class_exists("WPUltimateSearch")) :
 			$this->is_active = FALSE;
 			$this->options = get_option('wpus_options');
 
-			require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
-			$options_page = new WPUltimateSearchOptions();
-			add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
-			add_action('admin_init', array($options_page, 'register_settings'));
+			if(is_admin()) {
+				require_once(WPUS_DIR_PATH.'views/wpus-options.php'); // include options file
+				$options_page = new WPUltimateSearchOptions();
+				add_action('admin_menu', array($options_page, 'add_pages')); // adds page to menu
+				add_action('admin_init', array($options_page, 'register_settings'));
+			}
 
 			add_action('init', array($this, 'init'));
 
@@ -340,20 +342,20 @@ if(!class_exists("WPUltimateSearch")) :
 		private function get_enabled_facets() {
 			$options = $this->options;
 
-			foreach($options["'taxonomies'"] as $taxonomy => $key) {
-				if($key["'enabled'"]) {
-					if($key["'label'"]) {
-						$enabled_facets[] = $key["'label'"];
+			foreach($options['taxonomies'] as $taxonomy => $key) {
+				if($key['enabled']) {
+					if($key['label']) {
+						$enabled_facets[] = $key['label'];
 					} else {
 						$enabled_facets[] = $taxonomy;
 					}
 				}
 			}
-			if($options["'metafields'"]){
-				foreach($options["'metafields'"] as $metafield => $key) {
-					if($key["'enabled'"]) {
-						if($key["'label'"]) {
-							$enabled_facets[] = $key["'label'"];
+			if(isset($options['metafields'])){
+				foreach($options['metafields'] as $metafield => $key) {
+					if($key['enabled']) {
+						if($key['label']) {
+							$enabled_facets[] = $key['label'];
 						} else {
 							$enabled_facets[] = $metafield;
 						}
@@ -377,8 +379,8 @@ if(!class_exists("WPUltimateSearch")) :
 		protected function get_taxonomy_name($label) {
 			$options = $this->options;
 
-			foreach($options["'taxonomies'"] as $taxonomy => $value) {
-				if($value["'label'"] == $label) {
+			foreach($options['taxonomies'] as $taxonomy => $value) {
+				if($value['label'] == $label) {
 					return $taxonomy;
 				}
 			}
@@ -400,8 +402,8 @@ if(!class_exists("WPUltimateSearch")) :
 		protected function get_metafield_name($label) {
 			$options = $this->options;
 
-			foreach($options["'metafields'"] as $metafield => $value) {
-				if($value["'label'"] == $label) {
+			foreach($options['metafields'] as $metafield => $value) {
+				if($value['label'] == $label) {
 					return $metafield;
 				}
 			}
@@ -427,14 +429,14 @@ if(!class_exists("WPUltimateSearch")) :
 				return "text";
 			}
 
-			foreach($options["'taxonomies'"] as $taxonomy => $value) {
-				if($value["'label'"] == $facet || $taxonomy == $facet) {
+			foreach($options['taxonomies'] as $taxonomy => $value) {
+				if($value['label'] == $facet || $taxonomy == $facet) {
 					return "taxonomy";
 				}
 			}
-			if($options["'metafields'"]){
-				foreach($options["'metafields'"] as $metafield => $value) {
-					if($value["'label'"] == $facet || $metafield == $facet) {
+			if(isset($options['metafields'])){
+				foreach($options['metafields'] as $metafield => $value) {
+					if($value['label'] == $facet || $metafield == $facet) {
 						return "metafield";
 					}
 				}
@@ -561,14 +563,14 @@ if(!class_exists("WPUltimateSearch")) :
 				case "taxonomy" :
 					$facet = $this->get_taxonomy_name($facet); // get the database taxonomy name from the current facet
 
-					if(isset($options["'taxonomies'"][$facet]["'max'"])) {
-						$number = $options["'taxonomies'"][$facet]["'max'"];
+					if(isset($options['taxonomies'][$facet]['max'])) {
+						$number = $options['taxonomies'][$facet]['max'];
 					} else {
 						$number = 50; // set a max of 50 terms, so we don't break anything
 					}
 					$excludetermids = array();
-					if(!empty($options["'taxonomies'"][$facet]["'exclude'"])) {
-						$excludeterms = $this->string_to_keywords($options["'taxonomies'"][$facet]["'exclude'"]);
+					if(!empty($options['taxonomies'][$facet]['exclude'])) {
+						$excludeterms = $this->string_to_keywords($options['taxonomies'][$facet]['exclude']);
 						foreach($excludeterms as $term) {
 							$term = get_term_by('name', $term, $facet);
 							$excludetermids[] = $term->term_id;

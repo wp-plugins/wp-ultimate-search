@@ -2,7 +2,6 @@
 /**
  * WPUltimateSearchOptions
  *
- * @todo update about tab to include various credits and point people to mindsharelabs.com
  *
  */
 if(!class_exists('WPUltimateSearchOptions')) :
@@ -37,8 +36,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
 				$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
 				$this->is_active = $this->updater->get_remote_license($this->options['license_key'], $this->options['email_address']);
+				$this->hash = $this->updater->hash;
 			} else {
 				$this->is_active = false;
+				$this->hash = null;
 			}
 			
 			add_action('wp_ajax_wpus_validate', array($this, 'ajax_validate'));
@@ -68,18 +69,18 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			// set default values for all meta keys without stored settings
 
 			foreach($allkeys as $i => $key) {
-				if($key->{'count'} > $count && !isset($this->options["'metafields'"][$key->{"meta_key"}])) {
-					$this->options["'metafields'"][$key->{"meta_key"}] = array(
-						"'enabled'"      => 0,
-						"'label'"        => $key->{"meta_key"},
-						"'count'"        => $key->{'count'},
-						"'type'"         => 'string',
-						"'autocomplete'" => 0
+				if($key->{'count'} > $count && !isset($this->options["metafields"][$key->{"meta_key"}])) {
+					$this->options["metafields"][$key->{"meta_key"}] = array(
+						"enabled"      => 0,
+						"label"        => $key->{"meta_key"},
+						"count"        => $key->{'count'},
+						"type"         => 'string',
+						"autocomplete" => 0
 					);
 				}
 				// count the instances of each key, overwrite whatever it was before
 				if($key->{'count'} > $count) {
-					$this->options["'metafields'"][$key->{"meta_key"}]["'count'"] = $key->{'count'};
+					$this->options["metafields"][$key->{"meta_key"}]["count"] = $key->{'count'};
 				}
 			}
 
@@ -91,27 +92,27 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			
 			$taxonomies = get_taxonomies(array('public' => TRUE));
 			foreach($taxonomies as $taxonomy) {
-				if(!isset($this->options["'taxonomies'"][$taxonomy])){
+				if(!isset($this->options['taxonomies'][$taxonomy])){
 					if($taxonomy == 'post_tag') {
-						$this->options["'taxonomies'"][$taxonomy] = array(
-							"'enabled'" => 1,
-							"'label'"   => 'tag',
-							"'max'"     => 0,
-							"'exclude'" => ''
+						$this->options['taxonomies'][$taxonomy] = array(
+							"enabled" => 1,
+							"label"   => 'tag',
+							"max"     => 0,
+							"exclude" => ''
 						);
 					} elseif ($taxonomy == 'category') {
-						$this->options["'taxonomies'"][$taxonomy] = array(
-							"'enabled'" => 1,
-							"'label'"   => $taxonomy,
-							"'max'"     => 0,
-							"'exclude'" => ''
+						$this->options['taxonomies'][$taxonomy] = array(
+							"enabled" => 1,
+							"label"   => $taxonomy,
+							"max"     => 0,
+							"exclude" => ''
 						);						
 					} else {
-						$this->options["'taxonomies'"][$taxonomy] = array(
-							"'enabled'" => 0,
-							"'label'"   => $taxonomy,
-							"'max'"     => 0,
-							"'exclude'" => ''
+						$this->options['taxonomies'][$taxonomy] = array(
+							"enabled" => 0,
+							"label"   => $taxonomy,
+							"max"     => 0,
+							"exclude" => ''
 						);
 					}
 				}
@@ -125,7 +126,6 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		public function add_pages() {
 			$admin_page = add_options_page('Ultimate Search', 'Ultimate Search', 'manage_options', 'wpus-options', array($this, 'display_page'));
 			add_action('admin_print_scripts-'.$admin_page, array($this, 'scripts'));
-			add_action('admin_print_styles-'.$admin_page, array($this, 'styles'));
 		}
 
 		/**
@@ -183,8 +183,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			<div class="wrap">
 			<div class="icon32" id="icon-options-general"></div>
 			<h2><?php echo __('WP Ultimate Search Options') ?> </h2>
-
-			<?php if($this->is_active !== $this->updater->hash) { ?>
+			<?php if($this->is_active !== $this->hash) { ?>
 				<div class="postbox-container">
 					<div id="submitdiv" class="postbox">
 						<h3>WP Ultimate Search Pro</h3>
@@ -231,11 +230,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 */
 		public function display_taxopts_section() {
-			if($this->is_active !== $this->updater->hash) {
+			if($this->is_active !== $this->hash) {
 				echo '<h4 class="notice">Enable these options by upgrading to Ultimate Search Pro</h4>';
 			}
 			?>
-			<table class="widefat <?php if($this->is_active !== $this->updater->hash) : echo 'disabled'; endif; ?>">
+			<table class="widefat <?php if($this->is_active !== $this->hash) : echo 'disabled'; endif; ?>">
 				<thead>
 				<tr>
 					<th class="nobg">Taxonomy
@@ -276,22 +275,12 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				foreach($taxonomies as $taxonomy) {
 					$tax = $taxonomy->name;
 
-					// If there aren't default settings yet for the given taxonomy, create them
-					if(!isset($this->options["'taxonomies'"][$tax])) {
-						$this->options["'taxonomies'"][$tax] = array(
-							"'enabled'" => 0,
-							"'label'"   => $tax,
-							"'max'"     => 0,
-							"'exclude'" => ''
-						);
-					}
-
 					// If the taxonomy is active, set the 'checked' class
-					if(!empty($this->options["'taxonomies'"][$tax]["'enabled'"])) {
+					if(!empty($this->options['taxonomies'][$tax]['enabled'])) {
 						$checked = 'checked';
 					} else {
 						$checked = '';
-						$this->options["'taxonomies'"][$tax]["'enabled'"] = 0;
+						$this->options['taxonomies'][$tax]['enabled'] = 0;
 					}
 
 					// Generate the list of terms for the "Count" tooltip
@@ -302,7 +291,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						$termstring .= $term->name.', ';
 					}
 					$disabledtext = "";
-					if($this->is_active !== $this->updater->hash) {
+					if($this->is_active !== $this->hash) {
 						$disabledtext = 'disabled="disabled"';
 					}
 					?>
@@ -310,19 +299,19 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						<th scope="row" class="tax <?php echo $altclass ?>"><span id="<?php echo $tax.'-title' ?>" class="<?php echo $checked ?>"><?php echo $taxonomy->label ?>:<div class="VS-icon-cancel"></div></span>
 						</th>
 						<td class="<?php echo $altclass ?>">
-							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" id="<?php echo $tax ?>" name="wpus_options['taxonomies'][<?php echo $tax ?>]['enabled']" value="1" <?php echo checked($this->options["'taxonomies'"][$tax]["'enabled'"], 1, FALSE) ?> />
+							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][enabled]" value="1" <?php echo checked($this->options['taxonomies'][$tax]['enabled'], 1, FALSE) ?> />
 						</td>
 						<td class="<?php echo $altclass ?>">
-							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options['taxonomies'][<?php echo $tax ?>]['label']" size="20" placeholder="<?php echo $taxonomy->name ?>" value="<?php echo esc_attr($this->options["'taxonomies'"][$tax]["'label'"]) ?>" />
+							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][label]" size="20" placeholder="<?php echo $taxonomy->name ?>" value="<?php echo esc_attr($this->options['taxonomies'][$tax]['label']) ?>" />
 						</td>
 						<td class="<?php echo $altclass ?>"><?php echo $termcount ?>
 							<div class="tooltip" title="<?php echo $termstring ?>"></div>
 						</td>
 						<td class="<?php echo $altclass ?>">
-							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options['taxonomies'][<?php echo $tax ?>]['max']" size="3" placeholder="0" value="<?php echo esc_attr($this->options["'taxonomies'"][$tax]["'max'"]) ?>" />
+							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][max]" size="3" placeholder="0" value="<?php echo esc_attr($this->options['taxonomies'][$tax]['max']) ?>" />
 						</td>
 						<td class="<?php echo $altclass ?>">
-							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options['taxonomies'][<?php echo $tax ?>]['exclude']" size="30" placeholder="" value="<?php echo esc_attr($this->options["'taxonomies'"][$tax]["'exclude'"]) ?>" />
+							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][exclude]" size="30" placeholder="" value="<?php echo esc_attr($this->options['taxonomies'][$tax]['exclude']) ?>" />
 						</td>
 					</tr>
 					<?php
@@ -345,11 +334,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 */
 		public function display_metaopts_section() {
-			if($this->is_active !== $this->updater->hash) {
+			if($this->is_active !== $this->hash) {
 				echo '<h4 class="notice">Enable these options by upgrading to Ultimate Search Pro</h4>';
 			}
 			?>
-			<table class="widefat <?php if($this->is_active !== $this->updater->hash) : echo 'disabled'; endif; ?>">
+			<table class="widefat <?php if($this->is_active !== $this->hash) : echo 'disabled'; endif; ?>">
 				<thead>
 				<tr>
 					<th class="nobg">Meta Key
@@ -390,23 +379,23 @@ if(!class_exists('WPUltimateSearchOptions')) :
 
 				//$counts = $this->get_meta_field_counts();
 				
-				if(!isset($this->options["'metafields'"])) {
-					$this->options["'metafields'"] = array(); ?>
+				if(!isset($this->options["metafields"])) {
+					$this->options["metafields"] = array(); ?>
 					<tr><td colspan=4>No eligible meta fields found</td></tr>
 				<?php }
 
-				foreach($this->options["'metafields'"] as $metafield => $value) {
+				foreach($this->options["metafields"] as $metafield => $value) {
 
 					// If the taxonomy is active, set the 'checked' class
-					if(!empty($value["'enabled'"])) {
+					if(!empty($value["enabled"])) {
 						$checked = 'checked';
 					} else {
 						$checked = '';
-						$this->options["'metafields'"][$metafield]["'enabled'"] = 0;
+						$this->options["metafields"][$metafield]["enabled"] = 0;
 					}
 
-					if(empty($value["'autocomplete'"])) {
-						$this->options["'metafields'"][$metafield]["'autocomplete'"] = 0;
+					if(empty($value["autocomplete"])) {
+						$this->options["metafields"][$metafield]["autocomplete"] = 0;
 					}
 
 					// Generate the list of terms for the "Count" tooltip
@@ -416,7 +405,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 									foreach ( $terms as $term ) {
 										$termstring .= $term->name . ', ';
 									} */
-					if($this->is_active !== $this->updater->hash) {
+					if($this->is_active !== $this->hash) {
 						$disabledtext = 'disabled="disabled"';
 					}
 					?>
@@ -424,22 +413,22 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						<th scope="row" class="tax <?php echo $altclass ?>"><span id="<?php echo $metafield.'-title' ?>" class="<?php echo $checked ?>"><?php echo $metafield ?>:<div class="VS-icon-cancel"></div></span>
 						</th>
 						<td class="<?php echo $altclass ?>">
-							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" id="<?php echo $metafield ?>" name="wpus_options['metafields'][<?php echo $metafield ?>]['enabled']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'enabled'"], 1, FALSE) ?> />
+							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][enabled]" value="1" <?php echo checked($this->options["metafields"][$metafield]["enabled"], 1, FALSE) ?> />
 						</td>
 						<td class="<?php echo $altclass ?>">
-							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $metafield ?>" name="wpus_options['metafields'][<?php echo $metafield ?>]['label']" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($this->options["'metafields'"][$metafield]["'label'"]) ?>" />
+							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][label]" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($this->options["metafields"][$metafield]["label"]) ?>" />
 						</td>
-						<td class="<?php echo $altclass ?>"><?php echo $value["'count'"] ?></td>
+						<td class="<?php echo $altclass ?>"><?php echo $value["count"] ?></td>
 						
 						<?php /* commenting these fields out for now as they haven't been implemented yet
 						
-						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options['metafields'][<?php echo $metafield ?>]['type']" />
+						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options['metafields'][<?php echo $metafield ?>][type']" />
 							<option value="string" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "string", FALSE) ?> >String</option>
 							<option value="number" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "number", FALSE) ?> >Number</option>
 							<option value="date" <?php echo selected($this->options["'metafields'"][$metafield]["'type'"], "date", FALSE) ?> >Date</option>
 							</select></td>
 						<td class="<?php echo $altclass ?>">
-							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>]['autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
+							<input class="checkbox" <?php echo $disabledtext ?> type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
 						</td>
 						*/ ?>
 					</tr>
@@ -596,33 +585,35 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				'section' => 'general'
 			);
 
-			if(!empty($this->options['license_key']) && $this->is_active === $this->updater->hash && file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE)) {
-				$this->settings['license_key'] = array(
-					'title'   => __('License Key'),
-					'desc'    => __('Thanks for registering!'),
-					'std'     => '',
-					'type'    => 'password',
-					'section' => 'general',
-					'class'   => 'valid'
-				);
-			} elseif(!empty($this->options['license_key']) && $this->is_active !== $this->updater->hash) {
-				$this->settings['license_key'] = array(
-					'title'   => __('License Key'),
-					'desc'    => __('<div id="message" class="error"><p>We were unable to validate your license key. Please try again, or contact support.</p></div>'),
-					'std'     => "",
-					'type'    => 'text',
-					'section' => 'general',
-					'class'   => 'invalid'
-				);
-			} elseif($this->is_active === $this->updater->hash && !file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE)) {
-				$this->settings['license_key'] = array(
-					'title'   => __('License Key'),
-					'desc'    => __('<div id="message" class="error"><p>Your license key is valid but WP Ultimate Search Pro is not installed.<br />Re-enter your credentials and hit Validate to install.</p></div>'),
-					'std'     => "",
-					'type'    => 'text',
-					'section' => 'general',
-					'class'   => 'invalid'
-				);
+			if(!empty($this->options['license_key']) && !empty($this->options['email_address'])) {
+				if($this->is_active === $this->hash && file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE)) {
+					$this->settings['license_key'] = array(
+						'title'   => __('License Key'),
+						'desc'    => __('Thanks for registering!'),
+						'std'     => '',
+						'type'    => 'password',
+						'section' => 'general',
+						'class'   => 'valid'
+					);
+				} elseif($this->is_active !== $this->hash) {
+					$this->settings['license_key'] = array(
+						'title'   => __('License Key'),
+						'desc'    => __('<div id="message" class="error"><p>We were unable to validate your license key. Please try again, or contact support.</p></div>'),
+						'std'     => "",
+						'type'    => 'text',
+						'section' => 'general',
+						'class'   => 'invalid'
+					);
+				} elseif($this->is_active === $this->hash && !file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE)) {
+					$this->settings['license_key'] = array(
+						'title'   => __('License Key'),
+						'desc'    => __('<div id="message" class="error"><p>Your license key is valid but WP Ultimate Search Pro is not installed.<br />Re-enter your credentials and hit Validate to install.</p></div>'),
+						'std'     => "",
+						'type'    => 'text',
+						'section' => 'general',
+						'class'   => 'invalid'
+					);
+				}
 			} else {
 				$this->settings['license_key'] = array(
 					'title'   => __('License Key'),
@@ -793,17 +784,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			wp_enqueue_script('tiptip', WPUS_DIR_URL.'js/jquery.tipTip.minified.js', array('jquery'));
 			wp_enqueue_script('main', WPUS_DIR_URL.'js/main-admin.js', array('jquery'));
 			wp_localize_script('main', 'main', json_encode($this->sections));
-			wp_print_scripts('jquery-ui-tabs');
-		}
-
-		/**
-		 *
-		 * Enqueue and print styles
-		 *
-		 */
-		public function styles() {
-			wp_register_style('wpus-admin', WPUS_DIR_URL.'css/wpus-options.css');
-			wp_enqueue_style('wpus-admin');
+			wp_enqueue_script('jquery-ui-tabs');
+			
+			wp_enqueue_style('wpus-admin', WPUS_DIR_URL.'css/wpus-options.css');
 		}
 
 		/**
