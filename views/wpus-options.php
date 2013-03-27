@@ -2,20 +2,19 @@
 /**
  * WPUltimateSearchOptions
  *
- *
  */
 if(!class_exists('WPUltimateSearchOptions')) :
 	class WPUltimateSearchOptions extends WPUltimateSearch {
 
-		private $sections, $checkboxes, $settings, $updater;
-		public $options, $is_active;
+		private $sections, $checkboxes, $settings;
+		public $options, $is_active, $updater;
 
 		function __construct() {
 
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
 			$this->setting = array();
-			
+
 			$this->get_settings();
 
 			$this->sections['general'] = __('General Settings');
@@ -31,15 +30,16 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				$this->update_meta_fields();
 				$this->update_taxonomies();
 			}
-			
+
+			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
+			$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
+
 			if(!empty($this->options['license_key']) && !empty($this->options['email_address'])) {
-				require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
-				$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
 				$this->is_active = $this->updater->get_remote_license($this->options['license_key'], $this->options['email_address']);
 				$this->hash = $this->updater->hash;
 			} else {
-				$this->is_active = false;
-				$this->hash = null;
+				$this->is_active = FALSE;
+				$this->hash = NULL;
 			}
 			
 			add_action('wp_ajax_wpus_validate', array($this, 'ajax_validate'));
@@ -83,16 +83,17 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					$this->options["metafields"][$key->{"meta_key"}]["count"] = $key->{'count'};
 				}
 			}
-
 		}
-		
+
+		/**
+		 *  Set default taxonomy parameters
+		 *
+		 */
 		private function update_taxonomies() {
-			
-			// Set default taxonomy parameters
-			
+
 			$taxonomies = get_taxonomies(array('public' => TRUE));
 			foreach($taxonomies as $taxonomy) {
-				if(!isset($this->options['taxonomies'][$taxonomy])){
+				if(!isset($this->options['taxonomies'][$taxonomy])) {
 					if($taxonomy == 'post_tag') {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 1,
@@ -100,13 +101,13 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							"max"     => 0,
 							"exclude" => ''
 						);
-					} elseif ($taxonomy == 'category') {
+					} elseif($taxonomy == 'category') {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 1,
 							"label"   => $taxonomy,
 							"max"     => 0,
 							"exclude" => ''
-						);						
+						);
 					} else {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 0,
@@ -378,11 +379,14 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				$altclass = '';
 
 				//$counts = $this->get_meta_field_counts();
-				
+
 				if(!isset($this->options["metafields"])) {
 					$this->options["metafields"] = array(); ?>
-					<tr><td colspan=4>No eligible meta fields found</td></tr>
-				<?php }
+					<tr>
+						<td colspan=4>No eligible meta fields found</td>
+					</tr>
+				<?php
+				}
 
 				foreach($this->options["metafields"] as $metafield => $value) {
 
@@ -419,7 +423,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][label]" size="20" placeholder="<?php echo $metafield ?>" value="<?php echo esc_attr($this->options["metafields"][$metafield]["label"]) ?>" />
 						</td>
 						<td class="<?php echo $altclass ?>"><?php echo $value["count"] ?></td>
-						
+
 						<?php /* commenting these fields out for now as they haven't been implemented yet
 						
 						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options['metafields'][<?php echo $metafield ?>][type']" />
@@ -698,7 +702,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 
 			// Set default meta field parameters.
 			$this->update_meta_fields();
-			
+
 			// Set default taxonomy parameters
 			$this->update_taxonomies();
 
@@ -785,7 +789,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			wp_enqueue_script('main', WPUS_DIR_URL.'js/main-admin.js', array('jquery'));
 			wp_localize_script('main', 'main', json_encode($this->sections));
 			wp_enqueue_script('jquery-ui-tabs');
-			
+
 			wp_enqueue_style('wpus-admin', WPUS_DIR_URL.'css/wpus-options.css');
 		}
 
@@ -797,27 +801,24 @@ if(!class_exists('WPUltimateSearchOptions')) :
 
 		public function ajax_validate() {
 
-			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
-			$updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
+			$updater = $this->updater;
 
 			// validate the license before proceeding.
 			$result = $updater->get_remote_license($_POST['key'], $_POST['email']);
-			
+
 			if($result == $updater->hash) {
-				
+
 				// get the url to the purchased file
-				$http_request_url = $updater->get_remote_url($_POST['key'],$_POST['email']);
-				
+				$http_request_url = $updater->get_remote_url($_POST['key'], $_POST['email']);
+
 				// install the remote file
 				$result = $updater->do_remote_install($http_request_url, WP_PLUGIN_DIR);
-				
-				if($result == true) {
-					
+
+				if($result == TRUE) {
+
 					// if installed successfully, activate. set $result to either "true" or error message
 					$result = $updater->maybe_activate_plugin();
-					
 				}
-				
 			}
 
 			die($result); // return either success or error message to the script
