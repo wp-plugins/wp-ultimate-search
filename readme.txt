@@ -4,7 +4,7 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, autocomplete, jquery
 Requires at least: 3.4.1
 Tested up to: 3.5.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
  
 Advanced faceted auto completing AJAX search and filter utility.
 
@@ -56,6 +56,10 @@ Post your questions in the [support forum](http://mindsharelabs.com/support/).
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.0.3 =
+* Updates to premium upgrade process
+* Removed premium 'teasers' from options page to comply with repository guidelines
 
 = 1.0.2 =
 

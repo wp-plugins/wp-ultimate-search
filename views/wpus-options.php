@@ -14,14 +14,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
 			$this->setting = array();
+<<<<<<< .mine
+=======
 
+>>>>>>> .r688247
 			$this->get_settings();
-
-			$this->sections['general'] = __('General Settings');
-			$this->sections['taxopts'] = __('Taxonomy Settings');
-			$this->sections['metaopts'] = __('Post Meta Settings');
-			$this->sections['reset'] = __('Reset to Defaults');
-			$this->sections['about'] = __('About');
 
 			if(!$this->options = get_option('wpus_options')) {
 				$this->initialize_settings();
@@ -34,6 +31,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
 			$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
 
+			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
+			$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
+
 			if(!empty($this->options['license_key']) && !empty($this->options['email_address'])) {
 				$this->is_active = $this->updater->get_remote_license($this->options['license_key'], $this->options['email_address']);
 				$this->hash = $this->updater->hash;
@@ -41,6 +41,15 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				$this->is_active = FALSE;
 				$this->hash = NULL;
 			}
+			
+			$this->sections['general'] = __('General Settings');
+			// Only show taxonomy / metafield options for registered users (no more teasing)
+			if($this->is_active === $this->hash) {
+				$this->sections['taxopts'] = __('Taxonomy Settings');
+				$this->sections['metaopts'] = __('Post Meta Settings');
+			}
+			$this->sections['reset'] = __('Reset to Defaults');
+			$this->sections['about'] = __('About');
 			
 			add_action('wp_ajax_wpus_validate', array($this, 'ajax_validate'));
 		}
@@ -190,9 +199,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						<h3>WP Ultimate Search Pro</h3>
 
 						<div class="inside">
-							<p>Supports unlimited custom taxonomies, post meta data (including data from Advanced Custom Fields), and more. <strong>Only $25</strong>.</p>
-							<a class="button-primary" target="_blank" href="https://mindsharelabs.com/products/wp-ultimate-search-pro/?utm_source=wpus_basic&utm_medium=upgradebutton&utm_campaign=upgrade">Upgrade
-								Now</a>
+							<p>The free version of <strong>WP Ultimate Search</strong> contains all of the power of the pro version, but supports faceting only by "tag" and "category".</p>
+							<p>Upgrading to <strong>WP Ultimate Search Pro</strong> adds support for faceting by unlimited custom taxonomies, post meta data (including data from Advanced Custom Fields), and provides additional settings for how these facets are displayed.</p>
+							<p><strong>Only $25 for an unlimited license</strong>.</p>
+							<a class="button-primary" target="_blank" href="https://mindsharelabs.com/products/wp-ultimate-search-pro/?utm_source=wpus_basic&utm_medium=upgradebutton&utm_campaign=upgrade">Learn More</a>
 						</div>
 					</div>
 				</div>
@@ -230,11 +240,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 *
 		 */
-		public function display_taxopts_section() {
-			if($this->is_active !== $this->hash) {
-				echo '<h4 class="notice">Enable these options by upgrading to Ultimate Search Pro</h4>';
-			}
-			?>
+		public function display_taxopts_section() { ?>
 			<table class="widefat <?php if($this->is_active !== $this->hash) : echo 'disabled'; endif; ?>">
 				<thead>
 				<tr>
@@ -334,11 +340,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 *
 		 */
-		public function display_metaopts_section() {
-			if($this->is_active !== $this->hash) {
-				echo '<h4 class="notice">Enable these options by upgrading to Ultimate Search Pro</h4>';
-			}
-			?>
+		public function display_metaopts_section() { ?>
 			<table class="widefat <?php if($this->is_active !== $this->hash) : echo 'disabled'; endif; ?>">
 				<thead>
 				<tr>
