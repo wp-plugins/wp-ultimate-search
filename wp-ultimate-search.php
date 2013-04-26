@@ -4,12 +4,12 @@ Plugin Name: WP Ultimate Search
 Plugin URI: http://wordpress.org/extend/plugins/wp-ultimate-search/
 Description: Advanced faceted AJAX search and filter utility.
 Version: 1.0.4
-Author: Mindshare Studios
+Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
 
 /**
- * @copyright Copyright (c) 2012. All rights reserved.
+ * @copyright Copyright (c) 2012-2013. All rights reserved.
  * @author    Mindshare Studios, Inc.
  *
  * @license   Released under the GPL license http://www.opensource.org/licenses/gpl-license.php
@@ -27,10 +27,7 @@ Author URI: http://mindsharelabs.com/
  * GNU General Public License for more details.
  * **********************************************************************
  *
- * @todo      use WPUS_PLUGIN_SLUG
- * @todo      replace all class_exists('WPUltimateSearchPro') with better mechanism for testing pro
- * @todo      move all pro functions out of options page php file into this one
- * @todo      setup auto remote install + acivation
+ *
  */
 
 /* CONSTANTS */
@@ -119,7 +116,7 @@ if(!class_exists("WPUltimateSearch")) :
 
 		public $options, $is_active;
 
-		function __construct() {
+		public function __construct() {
 
 			$this->is_active = FALSE;
 			$this->options = get_option('wpus_options');
@@ -152,17 +149,21 @@ if(!class_exists("WPUltimateSearch")) :
 		 * wpus_register_widgets
 		 *
 		 */
-		function wpus_register_widgets() {
+		public function wpus_register_widgets() {
 			require_once(WPUS_DIR_PATH.'views/wpus-widget.php'); // include widget file
 			register_widget('wpultimatesearchwidget');
 		}
 
-		function init() {
-			if(file_exists(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php')) {
-				require(WPUS_PRO_PATH.WPUS_PRO_SLUG.'.php');
+		/**
+		 * Initialize pro functions if installed
+		 *
+		 */
+		public function init() {
+			if(file_exists(WPUS_PRO_PATH.'pro-functions.php')) {
+				require(WPUS_PRO_PATH.'pro-functions.php');
 				new WPUltimateSearchPro();
 			}
-			if($this->options['override_default']) {
+			if(@$this->options['override_default']) {
 				add_filter('get_search_form', array($this, 'search_form'));
 			}
 		}
@@ -236,7 +237,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Modified version of wp_strip_all_tags
 		 *
-		 *
 		 * Strips all HTML etc. tags from a given input, converts line breaks to spaces, and
 		 * removes any trailing tags that got clipped by the excerpt process
 		 *
@@ -272,7 +272,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Ajax response
 		 *
-		 *
 		 * Similar to wp_localize_script, but wp_localize_script can only be called on plugin load / on
 		 * page load. This function can be called during execution of the AJAX call & response process
 		 * to update the main.js file with new variables.
@@ -294,7 +293,6 @@ if(!class_exists("WPUltimateSearch")) :
 		/**
 		 *
 		 * Print results
-		 *
 		 *
 		 * If there are results, load the appropriate results template and output
 		 * the search results. Send Analytics tracking beacon if enabled.
@@ -333,7 +331,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Get Enabled Taxonomies
 		 *
-		 *
 		 * Return an array of all taxonomies which are currently selected in the options window
 		 *
 		 * @return array
@@ -368,7 +365,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Get Taxonomy Name
 		 *
-		 *
 		 * Matches a user-specified label from the options screen to it's corresponding term_name in the db
 		 *
 		 * @param $label
@@ -391,7 +387,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Get Metafield Name
 		 *
-		 *
 		 * Matches a user-specified label from the options screen to it's corresponding meta_key in the db
 		 *
 		 * @param $label
@@ -413,7 +408,6 @@ if(!class_exists("WPUltimateSearch")) :
 		/**
 		 *
 		 * Determine facet type
-		 *
 		 *
 		 * Given a facet label in string form, determines whether it's a taxonomy or post meta
 		 *
@@ -441,10 +435,6 @@ if(!class_exists("WPUltimateSearch")) :
 				}
 			}
 		}
-
-		/**
-		 *  PUBLIC FUNCTIONS
-		 */
 
 		/**
 		 * register_scripts
@@ -617,7 +607,6 @@ if(!class_exists("WPUltimateSearch")) :
 		 *
 		 * Get results
 		 *
-		 *
 		 * This is called by main.js when the wpus_search action is triggered. Gets
 		 * the query from the UI, reconstructs it into an array, builds and executes the
 		 * database query, and calls the function to output the results.
@@ -749,43 +738,41 @@ endif;
 /**
  *  GLOBAL FUNCTIONS AND TEMPLATE TAGS
  */
-if(class_exists("WPUltimateSearch")) {
 
-	$wp_ultimate_search = new WPUltimateSearch();
+$wp_ultimate_search = new WPUltimateSearch();
 
-	/**
-	 * wp_ultimate_search_results
-	 *
-	 */
-	function wp_ultimate_search_results() {
-		global $wp_ultimate_search;
-		$wp_ultimate_search->search_results_template_tag();
-	}
+/**
+ * wp_ultimate_search_results
+ *
+ */
+function wp_ultimate_search_results() {
+	global $wp_ultimate_search;
+	$wp_ultimate_search->search_results_template_tag();
+}
 
-	/**
-	 * wp_ultimate_search_bar
-	 *
-	 */
-	function wp_ultimate_search_bar() {
-		global $wp_ultimate_search;
-		$wp_ultimate_search->search_form_template_tag();
-	}
+/**
+ * wp_ultimate_search_bar
+ *
+ */
+function wp_ultimate_search_bar() {
+	global $wp_ultimate_search;
+	$wp_ultimate_search->search_form_template_tag();
+}
 
-	/**
-	 * make options public
-	 *
-	 * @param $option
-	 *
-	 * @return bool
-	 *
-	 * @todo move inside class. also.. is this really necessary? I can't remember the inspiration
-	 */
-	function wpus_option($option) {
-		$options = get_option('wpus_options');
-		if(isset($options[$option])) {
-			return $options[$option];
-		} else {
-			return FALSE;
-		}
+/**
+ * make options public
+ *
+ * @param $option
+ *
+ * @return bool
+ *
+ */
+function wpus_option($option) {
+	$options = get_option('wpus_options');
+	if(isset($options[$option])) {
+		return $options[$option];
+	} else {
+		return FALSE;
 	}
 }
+

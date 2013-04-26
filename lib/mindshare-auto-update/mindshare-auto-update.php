@@ -5,7 +5,7 @@
  * Provides a simple way to add automatic updates to premium themes and plugins.
  * Interacts with our remote repository API: https://mindsharelabs.com/update/
  *
- * @created      9/23/12 12:44 AM
+ * @created      4/25/13 12:44 AM
  * @author       Mindshare Studios, Inc.
  * @copyright    Copyright (c) 2013
  * @link         http://www.mindsharelabs.com/documentation/
@@ -26,13 +26,16 @@ if(!class_exists('mindshare_auto_update')) :
 		 * @param        $target_dir
 		 * @param string $update_server_uri
 		 *
+		 * @param null   $key
+		 * @param null   $email
+		 *
 		 * @internal param string $current_version
 		 * @internal param string $this->plugin_slug
 		 */
-		function __construct($plugin_slug, $target_dir, $update_server_uri = NULL) {
+		function __construct($plugin_slug, $target_dir, $update_server_uri = NULL, $key = NULL, $email = NULL) {
 			$debug = FALSE;
 
-			parent::__construct($plugin_slug, $target_dir, $update_server_uri);
+			parent::__construct($plugin_slug, $target_dir, $update_server_uri, $key, $email);
 
 			// define the alternative API for updating checking
 			add_filter('pre_set_site_transient_update_plugins', array($this, 'check_update'));
@@ -45,6 +48,7 @@ if(!class_exists('mindshare_auto_update')) :
 				add_filter('pre_set_site_transient_update_plugins', array($this, 'display_transient_update_plugins'));
 				$this->check_update(get_site_transient('update_plugins'));
 			}
+
 		}
 
 		function display_transient_update_plugins($transient) {
@@ -101,7 +105,7 @@ if(!class_exists('mindshare_auto_update')) :
 
 		public function check_info($false, $action, $arg) {
 			if($arg->slug === $this->slug) {
-				$information = $this->get_remote_information();
+				$information = $this->get_remote_information($this->key, $this->email);
 				return $information;
 			}
 			/**

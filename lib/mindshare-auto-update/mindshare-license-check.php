@@ -48,17 +48,46 @@ if(!class_exists('mindshare_license_check')) :
 		public $target_dir;
 
 		/**
+		 * License key
+		 *
+		 * @var string
+		 */
+		public $key;
+
+		/**
+		 * Registered Email
+		 *
+		 * @var string
+		 */
+		public $email;
+
+		/**
 		 * Initialize a new instance of the WordPress Auto-Update class
 		 *
 		 * @param        $plugin_slug
 		 * @param        $target_dir
 		 * @param string $update_server_uri
 		 *
+		 * @param null   $key
+		 * @param null   $email
+		 *
 		 * @internal param string $current_version
 		 * @internal param string $this->plugin_slug
 		 */
-		function __construct($plugin_slug, $target_dir, $update_server_uri = NULL) {
+		function __construct($plugin_slug, $target_dir, $update_server_uri = NULL, $key = NULL, $email = NULL) {
+
 			// set class public variables
+			if(isset($email)) {
+				$this->email = $email;
+			}
+			if(isset($key)) {
+				$this->key = $key;
+			}
+			// allow alternate update server
+			if(isset($update_server_uri)) {
+				$this->update_server_uri = $update_server_uri;
+			}
+
 			$this->plugin_slug = $plugin_slug;
 			/** @noinspection PhpUnusedLocalVariableInspection */
 			list($dir, $file) = explode('/', $this->plugin_slug);
@@ -69,10 +98,7 @@ if(!class_exists('mindshare_license_check')) :
 			if(file_exists($this->plugin_path.$this->slug.'.php')) {
 				$this->current_version = $this->get_local_version();
 			}
-			// allow alternate update server
-			if(isset($update_server_uri)) {
-				$this->update_server_uri = $update_server_uri;
-			}
+
 		}
 
 		/**
@@ -149,16 +175,38 @@ if(!class_exists('mindshare_license_check')) :
 		/**
 		 * Get information about the remote version
 		 *
+		 * @param null $key
+		 * @param null $email
+		 *
 		 * @return bool|object
 		 */
-		public function get_remote_information() {
+		public function get_remote_information($key = NULL, $email = NULL) {
 
-			$request = wp_remote_post($this->update_server_uri, array('body' => array('project' => $this->slug, 'action' => 'info')));
+			// if either license key or user email is missing, assume we're dealing with a free product
+			if(empty($key) || empty($email)) {
+				$body = array(
+					'body' => array(
+						'project' => $this->slug,
+						'action'  => 'info'
+					)
+				);
+			} else {
+				$body = array(
+					'body' => array(
+						'project' => $this->slug,
+						'action'  => 'info',
+						'k'       => $key,
+						'u'       => $email
+					)
+				);
+			}
 
-			if(!is_wp_error($request)) {
-				if(wp_remote_retrieve_response_code($request) === 200) {
-					return unserialize($request['body']);
-				} elseif(wp_remote_retrieve_response_code($request) === 503) {
+			$response = wp_remote_post($this->update_server_uri, $body);
+
+			if(!is_wp_error($response)) {
+				if(wp_remote_retrieve_response_code($response) === 200) {
+					return unserialize($response['body']);
+				} elseif(wp_remote_retrieve_response_code($response) === 503) {
 					//echo '<div id="message" class="error"><p>We\'re sorry! The update server timed out (status code: '.wp_remote_retrieve_response_code($request).'). Please try again later.</p></div>';
 					return FALSE;
 				} else {

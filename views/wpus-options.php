@@ -27,6 +27,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-license-check.php');
 			$this->updater = new mindshare_license_check(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
 
+			// @todo this is a mess and doesn't make sense.. I blame @bryce!
 			if(!empty($this->options['license_key']) && !empty($this->options['email_address'])) {
 				$this->is_active = $this->updater->get_remote_license($this->options['license_key'], $this->options['email_address']);
 				$this->hash = $this->updater->hash;
@@ -567,7 +568,6 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 * Standard settings
 		 *
-		 *
 		 * All settings in the $this->settings object wil be registered with add_settings_field. You can
 		 * specify a settings section and default value.
 		 *
@@ -681,17 +681,15 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 * Initialize default settings
 		 *
-		 *
 		 * If no options array is found, initialize everything to their default settings
-		 *
 		 *
 		 */
 		public function initialize_settings() {
 
 			$this->options = array();
 			foreach($this->settings as $id => $setting) {
-				if($setting['type'] != 'heading') {
-					$this->options[$id] = $setting['std'];
+				if(@$setting['type'] != 'heading') {
+					@$this->options[$id] = @$setting['std'];
 				}
 			}
 
@@ -707,7 +705,6 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		/**
 		 *
 		 * Register settings
-		 *
 		 *
 		 * Set up the wpus_options object, register the different settings sections / pages, and register
 		 * each of the individual settings.
@@ -797,6 +794,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		public function ajax_validate() {
 
 			$updater = $this->updater;
+
+			// @bryce these values weren't getting stored and we *need* them for pro's auto update to work right
+			// if you want to handle this differently let me know
+			update_option('wpus_k', $_POST['email']);
+			update_option('wpus_e', $_POST['key']);
 
 			// validate the license before proceeding.
 			$result = $updater->get_remote_license($_POST['key'], $_POST['email']);
