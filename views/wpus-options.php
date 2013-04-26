@@ -14,10 +14,6 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
 			$this->setting = array();
-<<<<<<< .mine
-=======
-
->>>>>>> .r688247
 			$this->get_settings();
 
 			if(!$this->options = get_option('wpus_options')) {
@@ -27,12 +23,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				$this->update_meta_fields();
 				$this->update_taxonomies();
 			}
-
-			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
-			$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
-
-			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
-			$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
+			
+			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-license-check.php');
+			$this->updater = new mindshare_license_check(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
 
 			if(!empty($this->options['license_key']) && !empty($this->options['email_address'])) {
 				$this->is_active = $this->updater->get_remote_license($this->options['license_key'], $this->options['email_address']);
