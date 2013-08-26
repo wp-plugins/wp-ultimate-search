@@ -24,10 +24,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				$this->update_taxonomies();
 			}
 			
-			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-license-check.php');
-			$this->updater = new mindshare_license_check(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
+			require_once(WPUS_DIR_PATH.'lib/mindshare-auto-update/mindshare-auto-update.php');
+			$this->updater = new mindshare_auto_update(trailingslashit(WPUS_PRO_SLUG).WPUS_PRO_FILE, WPUS_PRO_PATH);
 
-			// @todo this is a mess and doesn't make sense.. I blame @bryce!
 			if(!empty($this->options['license_key']) && !empty($this->options['email_address'])) {
 				$this->is_active = $this->updater->get_remote_license($this->options['license_key'], $this->options['email_address']);
 				$this->hash = $this->updater->hash;
@@ -568,6 +567,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 * Standard settings
 		 *
+		 *
 		 * All settings in the $this->settings object wil be registered with add_settings_field. You can
 		 * specify a settings section and default value.
 		 *
@@ -622,24 +622,91 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					'section' => 'general'
 				);
 			}
+			$this->settings['box_heading'] = array(
+				'section' => 'general',
+				'title'   => '', // not used
+				'desc'    => 'Search Box',
+				'type'    => 'heading'
+			);
+			$this->settings['show_facets'] = array(
+				'title'   => __('Show facets'),
+				'desc'    => __('Show available facets when the search box is first clicked.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['placeholder'] = array(
+				'title'   => __('Placeholder'),
+				'desc'    => __('Text displayed in the search box before a query is entered.'),
+				'std'     => "Search",
+				'type'    => 'text',
+				'section' => 'general'
+			);
 			$this->settings['override_default'] = array(
 				'section' => 'general',
 				'title'   => __('Override default search box'),
-				'desc'    => __('Select this to replace the default WordPress search for with an instance of WP Ultimate Search.<br /> Results will be shown at the page below.'),
+				'desc'    => __('Select this to replace the default WordPress search for with an instance of WP Ultimate Search.'),
 				'type'    => 'checkbox',
 				'std'     => 0
 			);
+			$this->settings['results_heading'] = array(
+				'section' => 'general',
+				'title'   => '', // not used
+				'desc'    => 'Search Results',
+				'type'    => 'heading'
+			);
+			$this->settings['clear_search'] = array(
+				'title'   => __('"Clear search" button'),
+				'desc'    => __('Display a button after search results to clear all terms.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$pages = get_pages();
+			$page_select = array();
+			foreach($pages as $page) {
+				$page_select[$page->ID] = $page->post_title;
+			}
 			$this->settings['results_page'] = array(
 				'title'   => __('Search Results Page'),
-				'desc'    => __('Specify the URL to the page with the ['.WPUS_PLUGIN_SLUG.'-results] shortcode (requires permalinks)'),
-				'std'     => "/search",
-				'type'    => 'text',
+				'desc'    => __('Specify the page with the ['.WPUS_PLUGIN_SLUG.'-results] shortcode.<br />Searches conducted from widget will redirect to this page.'),
+				'choices' => $page_select,
+				'std'	  => array_search('Search', $page_select), 
+				'type'    => 'select',
 				'section' => 'general'
 			);
 			$this->settings['no_results_msg'] = array(
 				'title'   => __('"No results" message'),
-				'desc'    => __('Customize the message displayed when no results are found'),
+				'desc'    => __('Customize the message displayed when no results are found.'),
 				'std'     => "Sorry, no results found.",
+				'type'    => 'text',
+				'section' => 'general'
+			);
+			$this->settings['highlight_terms'] = array(
+				'title'   => __('Highlight Terms'),
+				'desc'    => __('Highlight matching terms in search results.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['clear_search'] = array(
+				'title'   => __('"Clear search" button'),
+				'desc'    => __('Display a button after search results to clear all terms.'),
+				'std'     => 1,
+				'type'    => 'checkbox',
+				'section' => 'general'
+			);
+			$this->settings['clear_search_text'] = array(
+				'title'   => __('Button text'),
+				'desc'    => __(''),
+				'std'     => 'Clear Search Terms',
+				'type'    => 'text',
+				'section' => 'general'
+			);
+			$this->settings['clear_search_class'] = array(
+				'title'   => __('Button CSS class'),
+				'desc'    => __('Apply a CSS class to match your theme.'),
+				'std'     => 'btn btn-default',
 				'type'    => 'text',
 				'section' => 'general'
 			);
@@ -681,15 +748,17 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		 *
 		 * Initialize default settings
 		 *
+		 *
 		 * If no options array is found, initialize everything to their default settings
+		 *
 		 *
 		 */
 		public function initialize_settings() {
 
 			$this->options = array();
 			foreach($this->settings as $id => $setting) {
-				if(@$setting['type'] != 'heading') {
-					@$this->options[$id] = @$setting['std'];
+				if($setting['type'] != 'heading') {
+					$this->options[$id] = $setting['std'];
 				}
 			}
 
@@ -705,6 +774,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		/**
 		 *
 		 * Register settings
+		 *
 		 *
 		 * Set up the wpus_options object, register the different settings sections / pages, and register
 		 * each of the individual settings.
@@ -794,11 +864,6 @@ if(!class_exists('WPUltimateSearchOptions')) :
 		public function ajax_validate() {
 
 			$updater = $this->updater;
-
-			// @bryce these values weren't getting stored and we *need* them for pro's auto update to work right
-			// if you want to handle this differently let me know
-			update_option('wpus_k', $_POST['email']);
-			update_option('wpus_e', $_POST['key']);
 
 			// validate the license before proceeding.
 			$result = $updater->get_remote_license($_POST['key'], $_POST['email']);
