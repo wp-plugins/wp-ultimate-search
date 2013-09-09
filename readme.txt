@@ -1,16 +1,16 @@
 === WP Ultimate Search ===
 Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
-Tags: search, ajax, metadata, autocomplete, jquery
+Tags: search, ajax, metadata, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies
 Requires at least: 3.4.1
 Tested up to: 3.6
-Stable tag: 1.1.1
+Stable tag: 1.2
  
 Advanced faceted auto completing AJAX search and filter utility.
 
 == Description ==
 
-WP Ultimate Search: a highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
+A highly customizable WordPress search alternative with the ability to autocomplete [faceted search queries](http://en.wikipedia.org/wiki/Faceted_search).
 
 Try a [demo](http://ultimatesearch.mindsharelabs.com/).
 
@@ -44,6 +44,12 @@ When a search is executed, the plugin first looks in your current theme director
 
 To customize the template, first copy the wpus-results-template.php file into your theme directory. The code within this file is a standard WordPress loop, which you can modify in any way you choose. To learn more about WordPress loops, see the codex.
 
+= How do I stop my the viewport from zooming in when a user touches the search box on a mobile device? =
+
+If you have a mobile website and you want to disable autozooming on input fields (like the search bar), add the following code to your header.php file:
+
+`<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />`
+
 = More Info =
 
 Help documents and support forums are available at [Mindshare Labs](http://mindsharelabs.com/).
@@ -63,6 +69,19 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 `/tags/1.0/screenshot-3.jpg`
 
 == Changelog ==
+
+= 1.2 =
+* Added an alternative square search bar style
+* Added option to disable built-in taxonomies and revert to a plain text search
+* Added option to restrict script loading to only pages with search bar
+* Improved iOS support
+* Fixed bug where tag search wouldn't work for some users
+* Fixed "clear search" icon not clearing results
+* Fixed wpdb->prepare() notice appearing in WP 3.6
+* Fixed dropdown items appearing outside of search bar when a term was deleted
+* Added browser navigation history when moving from widget to results page
+* Minified visualsearch.js script
+
 
 = 1.1.1 =
 * Misc. bugfixes to 1.1
@@ -128,7 +147,7 @@ WARNING: If you encounter any problems with this update, check the "Reset option
 = 0.2 =
 * First public release
 
-== To Do ==
+== Upgrade Notice ==
 
-* Caching of meta data
-* Sortable results
+= 1.2 =
+Notice: this upgrade adds a lot of new options to the options page. Please review them and update your settings before using the search bar.

@@ -23,6 +23,7 @@
 	background-position: center 0;
 	background-image: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAWCAYAAAAW5GZjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAb9JREFUeNqUUr1qAkEQ3j0khQp6kihaeGgEEa18gTQR0iRY+BaBSMDGwidIEUKqFL6BopgqBAJ5AMFGjUU0d4WHEvwJarvZ77gRIzGYgb1hZr+Z75vZ40IIzqTNZrPj8Xicn0wmmcViEXS73aaqqq+BQODG6/W+A8MBNk3zfDAY3C6Xy0O2ZS6X6zMSiVwHg8FHLjtq7Xb7RQKj7BeTzVCgJ5PJU2U0GhUk7REuMpkMi8fjFggeMeecrVYrFRId0CgTAgDDMFg4HLbA8IjJgHNgGEr0er0fQIphUmZAwdSUADUB4RFDsz3oSMF6CLzZkQqgGebz+Z75dDqNdTqdp13bgDmdTj2VSp0oWHg0Gr2UNH2Z/9o+yMv7K4/HY/C/XhDUfr//jl7QQVT9fp/V63VWqVRYt9tliUSCZbPZg1wux9Lp9PqFeK1Wu9A0DdXz7YM87i0FrVZLs4Fi1wmFQh/NZjOmVKvVgq7rR/QflMtlixGedjwcDlUpMQ9tbzalkAAB2/R297mNW+sT2wUbUnA//V/nYrH4QOBNABUQuFQq3TNMuc82sDVrz41G42yvPeODAwZQ0QzwiJEnzLcAAwBJ6WXlwoBgZAAAAABJRU5ErkJggg==");
 	cursor: pointer;
+	font-size: 10px;
 }
 .VS-search .VS-icon-cancel:hover {
 	background-position: center -11px;
@@ -110,7 +111,6 @@
 	-webkit-box-shadow: inset 0px 0px 3px #ccc;
 	-moz-box-shadow: inset 0px 0px 3px #ccc;
 	box-shadow: inset 0px 0px 3px #ccc;
-	min-height: 32px;
 	height: auto;
 }
 .VS-search .VS-search-box.VS-focus {
@@ -168,8 +168,8 @@
 	padding: 0 0 0 14px;
 	position: relative;
 	border: 1px solid transparent;
-	height: 20px;
-	margin: 3px -3px 3px 8px;
+	height: 22px;
+	margin: 3px -3px 1px 8px;
 	overflow: visible;
 }
 .VS-search .search_facet.is_selected {
@@ -182,6 +182,7 @@
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#d2e6fd), to(#b0d1f9)); /* Saf4+, Chrome */
 	background-image: linear-gradient(top, #d2e6fd, #b0d1f9);
 	border: 1px solid #6eadf5;
+	height: 20px;
 }
 .VS-search .search_facet .category {
 	float: left;
@@ -205,12 +206,11 @@
 	padding: 0;
 	color: #000;
 	font-size: 13px;
-	line-height: 16px;
-	height: 18px;
+	line-height: 22px;
 	width: auto;
 	z-index: 100;
 	position: relative;
-	padding: 0 3px 0 2px;
+	padding: 0 3px 0 5px;
 }
 .VS-search .search_facet.is_editing input,
 .VS-search .search_facet.is_selected input {
@@ -244,18 +244,18 @@
 /* ================ */
 
 .VS-search .search_input {
-	height: 28px;
+	height: 22px;
 	float: left;
 	margin-left: -1px;
 	display: none;
+	margin: 3px -3px 3px 8px;
 }
 .VS-search .search_input:last-child {
 	display: block;
 }
 .VS-search .search_input input {
-	padding: 3px 3px 6px 2px;
+	padding: 2px 3px 2px 2px;
 	line-height: 20px;
-	height: 100%;
 	z-index: 100;
 	min-width: 20px;
 	position: relative;
