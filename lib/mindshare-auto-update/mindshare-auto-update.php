@@ -3,7 +3,7 @@
  * mindshare-auto-update.php
  *
  * Provides a simple way to add automatic updates to premium themes and plugins.
- * Interacts with our remote repository API: https://mindsharelabs.com/update/
+ * Interacts with our remote repository API: http://mindsharelabs.com/update/
  *
  * @created      4/25/13 12:44 AM
  * @author       Mindshare Studios, Inc.
@@ -33,7 +33,11 @@ if(!class_exists('mindshare_auto_update')) :
 		 * @internal param string $this->plugin_slug
 		 */
 		function __construct($plugin_slug, $target_dir, $update_server_uri = NULL, $key = NULL, $email = NULL) {
-			$debug = FALSE;
+			
+			$debug = apply_filters('msad_debug', FALSE);
+			$plugin_slug = apply_filters('msad_plugin_slug', $plugin_slug);
+			$target_dir = apply_filters('msad_target_dir', $target_dir);
+			$update_server_uri = apply_filters('msad_update_server_uri', $update_server_uri);
 
 			parent::__construct($plugin_slug, $target_dir, $update_server_uri, $key, $email);
 
