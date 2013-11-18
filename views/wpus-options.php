@@ -14,22 +14,35 @@ if(!class_exists('WPUltimateSearchOptions')) :
 
 		function __construct() {
 
-			if( !class_exists( 'WPUS_EDD_Remote_Install_Client' ) ) {
+			add_action('admin_menu', array($this, 'register_menus'));
+			add_action('admin_init', array($this, 'register_settings'));
+
+			// Create EDDRI instance
+			if( !class_exists( 'WPUS_Remote_Install_Client' ) ) {
 				include( WPUS_DIR_PATH . '/lib/edd-remote-install-client/EDD_Remote_Install_Client.php' );
 			}
+
+			$options = array( 'skipplugincheck'	=> true );
+			$edd_remote_install = new WPUS_Remote_Install_Client( WPUS_STORE_URL, 'settings_page_wpus-options', $options );
+
+			add_action( 'eddri-install-complete-settings_page_wpus-options', array($this, 'activate_upgrade') );
 
 			// This will keep track of the checkbox options for the validate_settings function.
 			$this->checkboxes = array();
 			$this->setting = array();
 			$this->get_settings();
 
-			if(!$this->options = get_option('wpus_options')) {
-				$this->initialize_settings();
-			} else {
-				// Check if there are any new meta / taxonomy fields. Set them up w/ default values if necessary
-				add_action('admin_init', array($this, 'update_meta_fields'));
-				add_action('admin_init', array($this, 'update_taxonomies'));
-			}
+				if(!$this->options = get_option('wpus_options')) {
+					$this->initialize_settings();
+				} else {
+					// Only necessary to run these operations when the actual WPUS options page is loaded
+					if(isset($_GET['page']) && $_GET['page'] == 'wpus-options') {
+						// Check if there are any new meta / taxonomy fields. Set them up w/ default values if necessary
+						add_action('admin_init', array($this, 'update_meta_fields'));
+						add_action('admin_init', array($this, 'update_taxonomies'));
+						add_action('admin_init', array($this, 'update_post_types'));
+					}
+				}
 
 			if(isset($this->options['license_status']) && $this->options["license_key"] != "")
 				$this->is_active = $this->options['license_status'];
@@ -39,9 +52,24 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			if($this->is_active === "active") {
 				$this->sections['taxopts'] = __('Taxonomy Settings');
 				$this->sections['metaopts'] = __('Post Meta Settings');
+				$this->sections['typeopts'] = __('Post Type Settings');
 			}
 			$this->sections['reset'] = __('Reset to Defaults');
 			$this->sections['about'] = __('About');
+		}
+
+		public function activate_upgrade($args) {
+
+			if($args['slug'] == "wp-ultimate-search-pro") {
+
+				$options = get_option('wpus_options');
+				$options['license_key'] = $args['license'];
+				$options['license_status'] = 'active';
+
+				update_option('wpus_options', $options);
+
+			}
+
 		}
 
 		/**
@@ -74,7 +102,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						"label"        => $key->{"meta_key"},
 						"count"        => $key->{"count"},
 						"type"         => "string",
-						"autocomplete" => 0
+						"autocomplete" => 1
 					);
 				}
 				// count the instances of each key, overwrite whatever it was before
@@ -98,32 +126,51 @@ if(!class_exists('WPUltimateSearchOptions')) :
 							"enabled" => 1,
 							"label"   => 'tag',
 							"max"     => 0,
-							"exclude" => ''
+							"exclude" => '',
+							"autocomplete" => 1
 						);
 					} elseif($taxonomy == 'category') {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 1,
 							"label"   => $taxonomy,
 							"max"     => 0,
-							"exclude" => ''
+							"exclude" => '',
+							"autocomplete" => 1
 						);
 					} else {
 						$this->options['taxonomies'][$taxonomy] = array(
 							"enabled" => 0,
 							"label"   => $taxonomy,
 							"max"     => 0,
-							"exclude" => ''
+							"exclude" => '',
+							"autocomplete" => 1
 						);
 					}
 				}
 			}
 		}
 
+		public function update_post_types() {
+
+			$posttypes = get_post_types(array('public' => TRUE));
+
+			foreach($posttypes as $type) {
+				if(!isset($this->options['posttypes'][$type])) {
+					$this->options['posttypes'][$type] = array(
+						"label"		=> $type,
+						"enabled"	=> 1
+					);
+				}
+
+			}
+
+		}
+
 		/**
 		 * Add menu pages
 		 *
 		 */
-		public function add_pages() {
+		public function register_menus() {
 			$admin_page = add_options_page('Ultimate Search', 'Ultimate Search', 'manage_options', 'wpus-options', array($this, 'display_page'));
 			add_action('admin_print_scripts-'.$admin_page, array($this, 'scripts'));
 		}
@@ -182,6 +229,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			<div class="wrap">
 			<div class="icon32" id="icon-options-general"></div>
 			<h2><?php echo __('WP Ultimate Search Options') ?> </h2>
+
 			<?php if($this->is_active !== "active" || $this->is_active === "active" && !file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE) ) { ?>
 				<div class="postbox-container">
 					<div id="submitdiv" class="postbox">
@@ -265,6 +313,12 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Exclude
 						<div class="tooltip" title="Comma-separated list of term names to exclude from autocomplete. If the term contains spaces, wrap it in quotation marks."></div>
 					</th>
+					<th>Include
+						<div class="tooltip" title="Comma-separated list of term names to include in autocomplete, all other terms will be excluded. If the term contains spaces, wrap it in quotation marks."></div>
+					</th>
+					<th>Autocomplete
+						<div class="tooltip" title="Whether or not to autocomplete values typed into this field."></div>
+					</th>
 				</tr>
 				</thead>
 				<tfoot>
@@ -275,6 +329,8 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Terms found</th>
 					<th>Max terms</th>
 					<th>Exclude</th>
+					<th>Include</th>
+					<th>Autocomplete</th>
 				</tr>
 				</tfoot>
 				<tbody>
@@ -291,6 +347,10 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					} else {
 						$checked = '';
 						$this->options['taxonomies'][$tax]['enabled'] = 0;
+					}
+
+					if(empty($this->options["taxonomies"][$tax]["autocomplete"])) {
+						$this->options["taxonomies"][$tax]["autocomplete"] = 0;
 					}
 
 					// Generate the list of terms for the "Count" tooltip
@@ -322,6 +382,12 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						</td>
 						<td class="<?php echo $altclass ?>">
 							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][exclude]" size="30" placeholder="" value="<?php echo esc_attr($this->options['taxonomies'][$tax]['exclude']) ?>" />
+						</td>
+						<td class="<?php echo $altclass ?>">
+							<input class="" <?php echo $disabledtext ?> type="text" id="<?php echo $tax ?>" name="wpus_options[taxonomies][<?php echo $tax ?>][include]" size="30" placeholder="" value="<?php echo (isset($this->options['taxonomies'][$tax]['include']) ? esc_attr($this->options['taxonomies'][$tax]['include']) : '') ?>" />
+						</td>
+						<td class="<?php echo $altclass ?>">
+							<input class="checkbox" type="checkbox" name="wpus_options[taxonomies][<?php echo $tax ?>][autocomplete]" value="1" <?php echo checked($this->options["taxonomies"][$tax]["autocomplete"], 1, FALSE) ?> />
 						</td>
 					</tr>
 					<?php
@@ -365,6 +431,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Type
 						<div class="tooltip" title="The format of the data."></div>
 					</th>
+					<th>Autocomplete
+						<div class="tooltip" title="Whether or not to autocomplete values typed into this field."></div>
+					</th>
 				</tr>
 				</thead>
 				<tfoot>
@@ -374,6 +443,7 @@ if(!class_exists('WPUltimateSearchOptions')) :
 					<th>Label override</th>
 					<th>Instances</th>
 					<th>Type</th>
+					<th>Autocomplete</th>
 				</tr>
 				</tfoot>
 				<tbody>
@@ -429,13 +499,75 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						<td class="<?php echo $altclass ?>"><select class="" id="<?php echo $metafield ?>" name="wpus_options[metafields][<?php echo $metafield ?>][type]" />
 							<option value="string" <?php echo selected($this->options["metafields"][$metafield]["type"], "string", FALSE) ?> >String</option>
 							<option value="checkbox" <?php echo selected($this->options["metafields"][$metafield]["type"], "checkbox", FALSE) ?> >Checkbox</option>
-							<option value="checkbox" <?php echo selected($this->options["metafields"][$metafield]["type"], "combobox", FALSE) ?> >Combobox</option>
+							<option value="combobox" <?php echo selected($this->options["metafields"][$metafield]["type"], "combobox", FALSE) ?> >Combobox</option>
+							<option value="geo" <?php echo selected($this->options["metafields"][$metafield]["type"], "geo", FALSE) ?> >ACF Map</option>
+							<option value="radius" <?php echo selected($this->options["metafields"][$metafield]["type"], "radius", FALSE) ?> >Radius</option>
 							</select>
 						</td>
-						<?php /* <td class="<?php echo $altclass ?>">
-							<input class="checkbox" type="checkbox" name="wpus_options['metafields'][<?php echo $metafield ?>][autocomplete']" value="1" <?php echo checked($this->options["'metafields'"][$metafield]["'autocomplete'"], 1, FALSE) ?> />
+						<td class="<?php echo $altclass ?>">
+							<input class="checkbox" type="checkbox" name="wpus_options[metafields][<?php echo $metafield ?>][autocomplete]" value="1" <?php echo checked($this->options["metafields"][$metafield]["autocomplete"], 1, FALSE) ?> />
 						</td>
-						*/ ?>
+					</tr>
+					<?php
+					// Set alternating classes on the table rows
+					if($altclass == 'alt') {
+						$altclass = '';
+					} else {
+						$altclass = 'alt';
+					}?>
+				<?php } ?>
+				</tbody>
+			</table>
+		<?php
+		}
+
+		/**
+		 *
+		 * Post type options
+		 *
+		 *
+		 */
+		public function display_typeopts_section() { ?>
+
+			<?php if($this->is_active !== "active") : return; endif; ?>
+
+			<table class="widefat <?php if($this->is_active !== "active") : echo 'disabled'; endif; ?>">
+				<thead>
+				<tr>
+					<th class="nobg">Post Type
+						<div class="tooltip" title="Post type, as it's registered with Wordpress."></div>
+					</th>
+					<th>Allow in results
+						<div class="tooltip" title="Whether or not to include posts of this type in search results."></div>
+					</th>
+				</tr>
+				</thead>
+				<tfoot>
+				<tr>
+					<th class="nobg">Post Type</th>
+					<th>Enabled</th>
+				</tr>
+				</tfoot>
+				<tbody>
+				<?php
+				$altclass = '';
+
+				foreach($this->options["posttypes"] as $posttype => $value) {
+
+					// If the taxonomy is active, set the 'checked' class
+					if(!empty($value["enabled"])) {
+						$checked = 'checked';
+					} else {
+						$checked = '';
+						$this->options["posttypes"][$posttype]["enabled"] = 0;
+					}
+					?>
+					<tr>
+						<th scope="row" class="tax <?php echo $altclass ?>"><span id="<?php echo $posttype.'-title' ?>" class="<?php echo $checked ?>"><?php echo $posttype ?><div class="VS-icon-cancel"></div></span>
+						<input class="" type="hidden" id="<?php echo $posttype ?>" name="wpus_options[posttypes][<?php echo $posttype ?>][label]" value="<?php echo esc_attr($this->options["posttypes"][$posttype]["label"]) ?>" /></th>
+						<td class="<?php echo $altclass ?>">
+							<input class="checkbox" type="checkbox" id="<?php echo $posttype ?>" name="wpus_options[posttypes][<?php echo $posttype ?>][enabled]" value="1" <?php echo checked($this->options["posttypes"][$posttype]["enabled"], 1, FALSE) ?> />
+						</td>
 					</tr>
 					<?php
 					// Set alternating classes on the table rows
@@ -699,6 +831,36 @@ if(!class_exists('WPUltimateSearchOptions')) :
 				'type'    => 'checkbox',
 				'std'     => 0
 			);
+			if($this->is_active === "active" && file_exists(WPUS_PRO_PATH.WPUS_PRO_FILE)) {
+				$this->settings['radius_heading'] = array(
+					'section' => 'general',
+					'title'   => '', // not used
+					'desc'    => 'Radius Searches',
+					'type'    => 'heading'
+				);
+				$this->settings['radius_dist'] = array(
+					'title'   => __('Radius'),
+					'desc'    => __('Set the default distance for radius searches'),
+					'std'	  => '60',
+					'type'    => 'text',
+					'section' => 'general'
+				);
+				$this->settings['radius_format'] = array(
+					'title'   => __('Format'),
+					'desc'    => __(''),
+					'choices' => array("km" => "Kilometers", "mi" => "Miles", "m" => "Meters"),
+					'std'	  => 'km',
+					'type'    => 'select',
+					'section' => 'general'
+				);
+				$this->settings['radius_label'] = array(
+					'title'   => __('Radius Label'),
+					'desc'    => __('Set the text that should be displayed as the label for the radius facet'),
+					'std'	  => 'distance (km)',
+					'type'    => 'text',
+					'section' => 'general'
+				);
+			}
 			$this->settings['results_heading'] = array(
 				'section' => 'general',
 				'title'   => '', // not used
@@ -845,6 +1007,9 @@ if(!class_exists('WPUltimateSearchOptions')) :
 			// Set default taxonomy parameters
 			$this->update_taxonomies();
 
+			// Set default post type parametrs
+			$this->update_post_types();
+
 			update_option('wpus_options', $this->options);
 		}
 
@@ -871,7 +1036,11 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						if($slug == 'metaopts') {
 							add_settings_section($slug, $title, array(&$this, 'display_metaopts_section'), 'wpus-options');
 						} else {
-							add_settings_section($slug, $title, array(&$this, 'display_section'), 'wpus-options');
+							if($slug == 'typeopts') {
+								add_settings_section($slug, $title, array(&$this, 'display_typeopts_section'), 'wpus-options');
+							} else {
+								add_settings_section($slug, $title, array(&$this, 'display_section'), 'wpus-options');
+							}
 						}
 					}
 				}
@@ -908,6 +1077,15 @@ if(!class_exists('WPUltimateSearchOptions')) :
 						$input[$id] = 0;
 					} else {
 						$input[$id] = 1;
+					}
+				}
+
+				$input['radius'] = false;
+				if(isset($input['metafields'])) {
+					foreach($input['metafields'] as $field => $data) {
+						if(isset($data['enabled']) && $data['enabled'] == '1' && $data['type'] == 'radius') {
+							$input['radius'] = $data['label'];
+						}
 					}
 				}
 				
