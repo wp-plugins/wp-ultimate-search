@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.4
+Version: 1.4.1
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -847,7 +847,7 @@ if(!class_exists("WPUltimateSearch")) :
 				$keywords = NULL;
 			}
 
-			$this->print_results($wpdb->get_results($querystring, OBJECT), $keywords); // format and output the search results
+			$this->print_results($wpdb->get_results($querystring, OBJECT), $keywords, null); // format and output the search results
 
 			die(); // wordpress may print out a spurious zero without this - can be particularly bad if using json
 		}
