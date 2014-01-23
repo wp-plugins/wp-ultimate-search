@@ -4,7 +4,7 @@ Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 3.4.1
 Tested up to: 3.7.1
-Stable tag: 1.4.1
+Stable tag: 1.4.2
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
@@ -35,10 +35,10 @@ Premium version supports the ability to search through an unlimited number of us
 3. Add a shortcode to a post, use the template tag in your theme, or use the sidebar widget.
 
 To use the shortcode:
-Place `[wp-ultimate-search-bar]` where you'd like the search bar, and `[wpus-search-results]` where you'd like the results.
+Place `[wp-ultimate-search-bar]` where you'd like the search bar, and `[wp-ultimate-search-results]` where you'd like the results.
 
 To use the template tag:
-Put `wp_ultimate_search_bar()` where you'd like the search bar, and `wpus_search_results()` where you'd like the results.
+Put `wp_ultimate_search_bar()` where you'd like the search bar, and `wp_ultimate_search_results()` where you'd like the results.
 
 For additional information, [visit our website](http://mindsharelabs.com/)
 
@@ -89,8 +89,15 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 == Changelog ==
 
+= 1.4.2 =
+* Updated options framework to work with new admin styles
+* Simplified pro upgrade process
+* Fixed typo in installation instructions
+* Fixed bug caused by ampersands in permalinks
+* Fixed PHP notices on multisite installations
+
 = 1.4.1 =
-* Fixed PHP warning bug
+* Fixed PHP warnings
 
 = 1.4 =
 * Added radius search capability based on ACF Map field
