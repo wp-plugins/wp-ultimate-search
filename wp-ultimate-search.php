@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.4.2
+Version: 1.4.3
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -584,8 +584,6 @@ if(!class_exists("WPUltimateSearch")) :
 			
 			if($mode == "widget" && get_the_ID() == $this->options['results_page'])
 				return;
-			
-			$options = $this->options;
 
 			// RENDER SEARCH FORM
 			return '<div id="search_box_container"><div id="search"><div class="VS-search">

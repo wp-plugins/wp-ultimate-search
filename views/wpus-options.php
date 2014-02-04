@@ -165,9 +165,15 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			if(is_array($input['license_key'])) {
 				$input['license_key'] = $input['license_key']['license_key'];
 				$input['license_status'] = 'active';
+
+				$this->is_active = true;
+
 			}
 
-			$this->is_active = true;
+			foreach($input['metafields'] as $metafield => $value) {
+				if($value['type'] == 'radius')
+					$input['radius'] = $value['label'];
+			}
 
 			return $input;
 
@@ -611,7 +617,11 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 			<?php if(!$this->is_active) return; ?>
 
-			<?php $options = get_option('wpus_options'); ?>
+			<?php $this->options = get_option('wpus_options'); ?>
+
+			<?php $this->update_meta_fields(); ?>
+
+			<?php $options = $this->options ?>
 
 			<table class="widefat table table-striped">
 				<thead>

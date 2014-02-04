@@ -3,8 +3,8 @@ Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 3.4.1
-Tested up to: 3.7.1
-Stable tag: 1.4.2
+Tested up to: 3.8
+Stable tag: 1.4.3
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
@@ -60,6 +60,10 @@ If you have a mobile website and you want to disable autozooming on input fields
 
 Since Wordpress uses post meta fields to track a lot of things you probably don't care to know about, we've added a filter to WPUS to only show a meta field as an option if it occurs more than three times. If you've recently added a meta field to a post, try adding that meta field to two more posts and you should see it appear as an option under Post Meta Settings.
 
+= How do I show search results on a map? =
+
+See the tutorial [here](http://mindsharelabs.com/kb/using-wp-ultimate-search-for-geo-search/).
+
 = More Info =
 
 Help documents and support forums are available at [Mindshare Labs](http://mindsharelabs.com/).
@@ -82,12 +86,17 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 `/trunk/screenshot-4.jpg`
 
-5. WP Ultimate Search being used on [Foodtrade.com](http://fresh.foodtrade.com/find/)
+5. Radius search. [See a demo](http://ultimatesearch.mindsharelabs.com/radius-search-demo/#search/radius=916+Baca+Street%2C+Santa+Fe%2C+NM%2C+United+States&distance+(km)=6)
 
 `/trunk/screenshot-5.jpg`
 
 
 == Changelog ==
+
+= 1.4.3 =
+* Fixed bug that prevented radius searches from working properly
+* Fixed bug that broke in-page anchors on some sites
+* Misc. bugfixes
 
 = 1.4.2 =
 * Updated options framework to work with new admin styles

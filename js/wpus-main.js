@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
 
 				// Update routers
 				var searchdata = [];
-				var searchuri = '';
+				var searchuri = 'search/';
 				searchdata = searchCollection.facets();
 				
 				// Build the search URI
@@ -178,7 +178,7 @@ jQuery(document).ready(function($) {
 
 	VS.utils.Searcher = Backbone.Router.extend({
 		routes: {
-			"*actions": "search"  // matches http://ultimatesearch.mindsharelabs.com/#query
+			"search/:query": "search"  // matches http://ultimatesearch.mindsharelabs.com/#search/query
 		},
 		search: function(query) {
 			
