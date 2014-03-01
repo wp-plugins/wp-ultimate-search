@@ -46,7 +46,6 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			}
 
 			$this->create_sections();
-			$this->create_settings();
 
 			// Update fields needing updating and save them back to the db
 			$this->update_taxonomies();
@@ -62,6 +61,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			add_action('show_section_taxopts', array($this, 'display_taxonomy_section'), 10, 2);
 			add_action('show_section_metaopts', array($this, 'display_meta_section'), 10, 2);
 			add_action('show_section_typeopts', array($this, 'display_type_section'), 10, 2);
+			add_action('show_field_results_page', array($this, 'show_search_select'), 10, 2);
 
 			// Field filters
 			add_filter('validate_field_license_key', array($this, 'activate_license'), 20, 2);
@@ -165,15 +165,9 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			if(is_array($input['license_key'])) {
 				$input['license_key'] = $input['license_key']['license_key'];
 				$input['license_status'] = 'active';
-
-				$this->is_active = true;
-
 			}
 
-			foreach($input['metafields'] as $metafield => $value) {
-				if($value['type'] == 'radius')
-					$input['radius'] = $value['label'];
-			}
+			$this->is_active = true;
 
 			return $input;
 
@@ -342,6 +336,13 @@ if(!class_exists('WPUltimateSearchOptions')) {
 				'type'    => 'text',
 				'section' => 'general'
 			);
+			$this->settings['remainder'] = array(
+				'title'   => __('Remainder'),
+				'desc'    => __('Text displayed to preface queries which don\'t use a facet.'),
+				'std'     => "Text",
+				'type'    => 'text',
+				'section' => 'general'
+			);
 			$this->settings['override_default'] = array(
 				'section' => 'general',
 				'title'   => __('Override default search box'),
@@ -485,6 +486,20 @@ if(!class_exists('WPUltimateSearchOptions')) {
 			);
 		}
 
+		function show_search_select($id, $field) {
+
+			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox ' . $field['class'] . '" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . ' data-filter="true" >';
+
+			foreach($field['choices'] as $value => $label) {
+
+				echo '<div data-value="' . esc_attr($value) . '"' . selected($this->options[$id], $value, FALSE) . '>' . $label . '</div>';
+
+			}
+
+			echo '</div>';
+
+		}
+
 		public function display_about_section($slug, $settings) { ?>
 
 			<p>Developed by <a href="http://mind.sh/are/?ref=wpus">Mindshare Studios, Inc</a>. </p>
@@ -617,11 +632,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 
 			<?php if(!$this->is_active) return; ?>
 
-			<?php $this->options = get_option('wpus_options'); ?>
-
-			<?php $this->update_meta_fields(); ?>
-
-			<?php $options = $this->options ?>
+			<?php $options = get_option('wpus_options'); ?>
 
 			<table class="widefat table table-striped">
 				<thead>
@@ -797,6 +808,7 @@ if(!class_exists('WPUltimateSearchOptions')) {
 		<?php }
 
 		public function initialize() {
+			$this->create_settings();
 			parent::__construct($this->setup, $this->settings, $this->sections);
 		}
 

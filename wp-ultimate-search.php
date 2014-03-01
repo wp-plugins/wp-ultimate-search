@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.4.3
+Version: 1.4.4
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -508,8 +508,6 @@ if(!class_exists("WPUltimateSearch")) :
 		public function register_scripts() {
 
 			// ENQUEUE VISUALSEARCH SCRIPTS
-			//			wp_enqueue_script('underscore', WPUS_DIR_URL.'js/underscore-min.js');
-			//			wp_enqueue_script('backbone', WPUS_DIR_URL.'js/backbone-min.js', array('underscore'));
 			wp_enqueue_script('underscore');
 			wp_enqueue_script('backbone');
 			wp_enqueue_script(
@@ -549,16 +547,17 @@ if(!class_exists("WPUltimateSearch")) :
 			($options['highlight_terms'] == 1 ? $highlight = true : $highlight = false);
 
 			$params = array(
-				'ajaxurl'          => admin_url('admin-ajax.php'),
-				'searchNonce'      => wp_create_nonce('search-nonce'),
-				'trackevents'      => $options['track_events'],
-				'eventtitle'       => $options['event_category'],
-				'enabledfacets'    => json_encode($this->get_enabled_facets()),
-				'resultspage'      => get_permalink($options['results_page']),
-				'showfacets'	   => $showfacets,
-				'placeholder'	   => $options['placeholder'],
-				'highlight'		   => $highlight,
-				'radius'		   => $radius
+				'ajaxurl'		=> admin_url('admin-ajax.php'),
+				'searchNonce'   => wp_create_nonce('search-nonce'),
+				'trackevents'   => $options['track_events'],
+				'eventtitle'    => $options['event_category'],
+				'enabledfacets' => json_encode($this->get_enabled_facets()),
+				'resultspage'   => get_permalink($options['results_page']),
+				'showfacets'	=> $showfacets,
+				'placeholder'	=> $options['placeholder'],
+				'highlight'		=> $highlight,
+				'radius'		=> $radius,
+				'remainder'		=> $options['remainder']
 			);
 
 			wp_localize_script('wpus-script', 'wpus_script', $params);
