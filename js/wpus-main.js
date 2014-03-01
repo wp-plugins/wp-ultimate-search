@@ -63,9 +63,7 @@ jQuery(document).ready(function($) {
 	var visualSearch = VS.init({
 		container:  $("#search_box_container"),
 		query:      '',
-		unquotable: [
-			"text"
-		],
+		remainder   : wpus_script.remainder,
 		placeholder : wpus_script.placeholder,
       	showFacets  : wpus_script.showfacets,
 		callbacks:  {
@@ -89,8 +87,6 @@ jQuery(document).ready(function($) {
 					}
 				}
 
-				VS.app.searcher.navigate("/" + searchuri);
-
 				if(!query) {
 					return;
 				}
@@ -110,6 +106,9 @@ jQuery(document).ready(function($) {
 				};
 
 				if($("#wpus_response").length > 0) {
+
+					VS.app.searcher.navigate("/" + searchuri);
+
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 						spinner.stop();
 						$("#wpus_response").html(response_from_get_results);

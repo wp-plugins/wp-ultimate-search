@@ -3,8 +3,8 @@ Contributors: sekatsim, mindshare
 Donate link: http://mind.sh/are/donate/
 Tags: search, ajax, metadata, meta, post meta, autocomplete, jquery, facet, faceted search, faceting, advanced custom fields, acf, taxonomy, taxonomies, term, terms, facets, geo, wp-geo, radius, latitude, longitude, location
 Requires at least: 3.4.1
-Tested up to: 3.8
-Stable tag: 1.4.3
+Tested up to: 3.8.1
+Stable tag: 1.4.4
  
 Powerful AJAX-based search alternative which supports faceting queries by taxonomies, terms, location, and post metadata.
 
@@ -72,26 +72,33 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 
 1. Search bar with results.
 
-`/tags/1.0/screenshot-1.jpg`
+`/assets/screenshot-1.jpg`
 
 2. Settings screen showing taxonomy options.
 
-`/tags/1.0/screenshot-2.jpg`
+`/assets/screenshot-2.jpg`
 
 3. Also compatible with touch devices.
 
-`/tags/1.0/screenshot-3.jpg`
+`/assets/screenshot-3.jpg`
 
 4. WP Ultimate Search being used on a music archive
 
-`/trunk/screenshot-4.jpg`
+`/assets/screenshot-4.jpg`
 
 5. Radius search. [See a demo](http://ultimatesearch.mindsharelabs.com/radius-search-demo/#search/radius=916+Baca+Street%2C+Santa+Fe%2C+NM%2C+United+States&distance+(km)=6)
 
-`/trunk/screenshot-5.jpg`
+`/assets/screenshot-5.jpg`
 
 
 == Changelog ==
+
+= 1.4.4 =
+* Updated visualsearch.js to latest version
+* Can now specify remainder preface for text queries
+* Settings will now be set to defaults on first install
+* Fixed extra history state being added when navigating to results page from widget
+* Moved screenshots to /assets/ folder
 
 = 1.4.3 =
 * Fixed bug that prevented radius searches from working properly
@@ -142,7 +149,6 @@ Help documents and support forums are available at [Mindshare Labs](http://minds
 * Fixed dropdown items appearing outside of search bar when a term was deleted
 * Added browser navigation history when moving from widget to results page
 * Minified visualsearch.js script
-
 
 = 1.1.1 =
 * Misc. bugfixes to 1.1
