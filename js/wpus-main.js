@@ -116,8 +116,8 @@ jQuery(document).ready(function($) {
 						
 						if(wpus_script.highlight) {
 							for(var i = 0; i < searchdata.length; i++) {
-								if(searchdata[i]['text']) {
-									var words = searchdata[i]['text'].split(' ');
+								if(searchdata[i][wpus_script.remainder]) {
+									var words = searchdata[i][wpus_script.remainder].split(' ');
 									for (var word in words) {
 										$("#wpus_response").highlight(words[word]);
 									}
@@ -151,9 +151,6 @@ jQuery(document).ready(function($) {
 				}
 			},
 			valueMatches: function(category, searchTerm, callback) {
-				if(category == "text") {
-					return;
-				}
 				var data = {
 					action: "wpus_getvalues",
 					facet:  category
