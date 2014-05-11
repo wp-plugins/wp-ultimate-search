@@ -33,16 +33,104 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 
 <h4>Changelog<h4>
 
-= 1.3 =
+v1.6.1
+------------------------
+* Fixed missing argument bug in widget
+
+v1.6
+------------------------
+* Added built in custom results templates (post with thumbnail, title only, thumbnail only)
+* Added ability to override default settings via shortcode / template tag
+* Added support for ACF date field
+* Added support for ACF true/false field
+* Fixed bug with AND logic and hierarchical taxonomies
+* Fixed cursor not appearing on initial search bar focus in Square style
+* Fixed bug where clicking on placeholder text would prevent search
+* Changed "include" and "exclude" fields to require term IDs instead of names
+* Continuing style refinements
+
+v1.5.2
+------------------------
+* Added cancel button next to facets in single facet mode
+* Dropdown menu no longer appears in wrong location when facets are deleted
+* "AND" logic now works correctly again
+* Fixed bug where meta field options wouldn't display properly
+* Fixed bug caused by using Single Facet Mode with a metadata facet
+
+v1.5.1
+------------------------
+* Values will no longer appear in dropdown if they're already in use in the search bar
+* Fixed shortcode outputting contents at top of page
+* Value dropdown will no longer appear when navigating to results page via permalink
+
+v1.5
+------------------------
+* Added ability to search for posts by user
+* Added ability to confine all searches to a single facet
+* Added ability to only allow facets to be used once
+* Added option to disable permalink generation
+* Refactored database query for faster response times
+* Fixed bug where multiple parameters wouldn't be received from permalinks
+* Fixed bug where URL wouldn't reset when 'clear search' was clicked
+* Fixed broken "results page" dropdown
+* Misc. style fixes and normalizing
+
+v1.4.5
+------------------------
+* Fixed bug with text searches
+
+v1.4.4
+------------------------
+* Updated visualsearch.js to latest version
+* Can now specify remainder preface for text queries
+* Settings will now be set to defaults on first install
+* Fixed extra history state being added when navigating to results page from widget
+* Moved screenshots to /assets/ folder
+
+v1.4.3
+------------------------
+* Fixed bug that prevented radius searches from working properly
+* Fixed bug that broke in-page anchors on some sites
+* Misc. bugfixes
+
+v1.4.2
+------------------------
+* Updated options framework to work with new admin styles
+* Simplified pro upgrade process
+* Fixed typo in installation instructions
+* Fixed bug caused by ampersands in permalinks
+* Fixed PHP notices on multisite installations
+
+v1.4.1
+------------------------
+* Fixed PHP warnings
+
+v1.4
+------------------------
+* Added radius search capability based on ACF Map field
+* Added ability to confine taxonomy searches to given terms
+* Added ability to exclude specific post types from results
+* Added ability to search for addresses stored with an ACF Map field
+* Added ability to disable autocomplete per facet
+* Fixed bug where spaces in facet names would break permalinks
+* Fixed bug where permalinks weren't updated when last facet was removed
+* Fixed bug where lowercase terms would appear after capitalized ones
+* Fixed bug where pressing backspace would sometimes cause the browser to navigate back
+* Fixed bugs that sometimes prevented premium upgrade
+
+v1.3
+------------------------
 * Added the ability to search for posts based on their ACF checkboxes
 * Added support for ACF comboxboxes
 * Upgraded to EDD for licensing and upgrade
 * Added settings to plugin action links
 
-= 1.2.1 =
+v1.2.1
+------------------------
 * Misc. bugfixes to 1.2
 
-= 1.2 =
+v1.2
+------------------------
 * Added an alternative square search bar style
 * Added option to disable built-in taxonomies and revert to a plain text search
 * Added option to restrict script loading to only pages with search bar
@@ -54,7 +142,8 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 * Added browser navigation history when moving from widget to results page
 * Minified visualsearch.js script
 
-= 1.1 =
+v1.1
+------------------------
 * Added support for special characters in facet values
 * Fixed permalinked searches rendering spaces as underscores
 * Fixed bug that would cause the "no results" message to not show
@@ -67,11 +156,13 @@ For additional information, [visit our website](http://mindsharelabs.com/)
 * DB queries updated to support Wordpress 3.6
 * Misc. style refinements and bugfixes
 
-= 1.0.3 =
+v1.0.3
+------------------------
 * Updates to premium upgrade process
 * Removed premium 'teasers' from options page to comply with repository guidelines
 
-= 1.0.2 =
+v1.0.2
+------------------------
 
 WARNING: If you encounter any problems with this update, check the "Reset options" box and hit Save Changes to restore initial settings.
 
@@ -79,8 +170,8 @@ WARNING: If you encounter any problems with this update, check the "Reset option
 * Silenced PHP notices when wp_debug was turned on
 * Fixed bug that prevented option saving with some database configurations
 
-= 1.0.1 =
-
+1.0.1
+------------------------
 * Bugfix release:
 * Minified spin.js
 * Moved result highlighting out of php (buggy) and into JS
@@ -89,7 +180,8 @@ WARNING: If you encounter any problems with this update, check the "Reset option
 * Updated visualsearch.js to v0.4.0
 * Added default styling to search bar so bar will be displayed before scripts have loaded 
 
-= 1.0 =
+v1.0
+------------------------
 * Option to replace WordPress default search
 * Ability to search in custom taxonomies (with upgrade)
 * Ability to search in post meta fields (with upgrade)
@@ -97,11 +189,13 @@ WARNING: If you encounter any problems with this update, check the "Reset option
 * Supports user-created search results templates
 * Many more tweaks and optimizations
 
-= 0.4 =
+v0.4
+------------------------
 * Can search post tags
 * Optimized database interaction
 
-= 0.3 =
+v0.3
+------------------------
 * Added options page
 * Ability to search within shortcodes
 * Google Analytics integration

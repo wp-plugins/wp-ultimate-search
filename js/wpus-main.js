@@ -57,15 +57,11 @@ jQuery(document).ready(function($) {
 		top:       'auto', // Top position relative to parent in px
 		left:      'auto' // Left position relative to parent in px
 	};
-	
-	
 
 	var visualSearch = VS.init({
 		container:  $("#search_box_container"),
 		query:      '',
-		unquotable: [
-			"text"
-		],
+		remainder   : wpus_script.remainder,
 		placeholder : wpus_script.placeholder,
       	showFacets  : wpus_script.showfacets,
 		callbacks:  {
@@ -89,8 +85,6 @@ jQuery(document).ready(function($) {
 					}
 				}
 
-				VS.app.searcher.navigate("/" + searchuri);
-
 				if(!query) {
 					return;
 				}
@@ -110,15 +104,19 @@ jQuery(document).ready(function($) {
 				};
 
 				if($("#wpus_response").length > 0) {
+
+					if(wpus_script.disable_permalinks != 1) {
+						VS.app.searcher.navigate("/" + searchuri);
+					}
+
 					$.get(wpus_script.ajaxurl, data, function(response_from_get_results) {
 						spinner.stop();
 						$("#wpus_response").html(response_from_get_results);
-						// @todo: make result highlighting less sketchy
 						
 						if(wpus_script.highlight) {
 							for(var i = 0; i < searchdata.length; i++) {
-								if(searchdata[i]['text']) {
-									var words = searchdata[i]['text'].split(' ');
+								if(searchdata[i][wpus_script.remainder]) {
+									var words = searchdata[i][wpus_script.remainder].split(' ');
 									for (var word in words) {
 										$("#wpus_response").highlight(words[word]);
 									}
@@ -136,11 +134,12 @@ jQuery(document).ready(function($) {
 							e.preventDefault();
 							visualSearch.searchBox.clearSearch('type=keydown');
 							$("#wpus_response").html("");
+							VS.app.searcher.navigate("/" );
 						});
 						$('.VS-icon-cancel').click(function(e) {
 							$("#wpus_response").html("");
+							VS.app.searcher.navigate("/" );
 						});
-
 
 						});
 						if(wpus_script.trackevents == true) {
@@ -152,26 +151,74 @@ jQuery(document).ready(function($) {
 				}
 			},
 			valueMatches: function(category, searchTerm, callback) {
-				if(category == "text") {
-					return;
-				}
 				var data = {
 					action: "wpus_getvalues",
 					facet:  category
 				};
 				$.get(wpus_script.ajaxurl, data, function(response_from_get_values) {
 					if(response_from_get_values) {
-						callback($.parseJSON(response_from_get_values), {
+						response_from_get_values = $.parseJSON(response_from_get_values);
+
+						// Don't display a value if it's already in use in the search collection
+						$.each( visualSearch.searchQuery.facets(), function( key, value ) {
+							$.each( value, function( key, value ) {
+
+								if(key == category) {
+									response_from_get_values = $.grep(response_from_get_values, function(val) {
+										return val != value;
+									});
+								}
+
+							});
+						});
+
+						callback(response_from_get_values, {
 							preserveOrder: true
 						});
 					}
 				});
 			},
 			facetMatches: function(callback) {
-				var json_str = wpus_script.enabledfacets.replace(/&quot;/g, '"');
-				callback($.parseJSON(json_str), {
-					preserveOrder: true
-				});
+				var facets = $.parseJSON(wpus_script.enabledfacets.replace(/&quot;/g, '"'));
+				var currentfacets = visualSearch.searchQuery.facets();
+
+				// If only one facet has been enabled, and "single facet" mode is turned on
+				if(facets.length == 1 && wpus_script.single_facet == true && currentfacets.length > 0) {
+
+					var lastfacet = currentfacets[currentfacets.length-1];
+
+					if(lastfacet[Object.keys(lastfacet)[0]].length > 0) {
+
+                    	// Add a regular facet to the box
+						visualSearch.searchBox.addFacet(facets[0], '', 99);
+
+					} else {
+
+						// If the last facet in the box is empty, move the cursor to the previous one and open the autocomplete dropdown.
+						visualSearch.searchBox.facetViews[currentfacets.length-1].setCursorAtEnd(-1);
+						visualSearch.searchBox.facetViews[currentfacets.length-1].searchAutocomplete(-1);
+					}
+
+
+				} else if (facets.length == 1 && wpus_script.single_facet == true && currentfacets.length == 0) {
+
+					// First facet being added to the box
+					visualSearch.searchBox.addFacet(facets[0], '', 99);
+
+				} else {
+					// If we're only allowing each facet to be used once.
+					if(wpus_script.single_use == 1) {
+						var currentFacets = visualSearch.searchQuery.pluck("category");
+
+						facets = facets.filter( function( el ) {
+							return currentFacets.indexOf( el ) < 0;
+						});
+					}
+
+					callback(facets, {
+						preserveOrder: true
+					});
+				}
 			}
 		}
 	});
@@ -185,25 +232,38 @@ jQuery(document).ready(function($) {
 			if(!query) {
 				return;
 			}
-			var result = {};
+			var result = new Array();
 
 			query = query.replace(/\+/g, ' ');
 
 			$.each(query.split('&'), function(index, value){
 		        if(value){
 		        	value = value.replace('%and','&');
-		            var param = value.split('=');
-		            result[param[0]] = param[1];
+		            result.push(value);
 		        }
 		    });
 
+			// Clear the search box
 			visualSearch.searchBox.value('');
 
+			// For each query parameter, break it into a key/value pair and create a facet
 			$.each(result, function(index, value) {
-				visualSearch.searchBox.addFacet(index, value, 0);
+				var param = value.split('=');
+				visualSearch.searchBox.addFacet(param[0], param[1], 99);
 			});
 
+			// Execute the search
 			visualSearch.searchBox.searchEvent({});
+
+			// If we're in single facet mode, create a new facet and open the dropdown
+			if(wpus_script.single_facet == true) {
+
+				var facets = $.parseJSON(wpus_script.enabledfacets.replace(/&quot;/g, '"'));
+
+				if(facets.length == 1) {
+					visualSearch.searchBox.addFacet(facets[0], '', 99);
+				}
+			}
 		}
 	});
 	// Initiate the router
