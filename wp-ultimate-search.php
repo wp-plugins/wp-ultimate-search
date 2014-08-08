@@ -3,7 +3,7 @@
 Plugin Name: WP Ultimate Search
 Plugin URI: http://ultimatesearch.mindsharelabs.com
 Description: Advanced faceted AJAX search and filter utility.
-Version: 1.6.3
+Version: 1.6.4
 Author: Mindshare Studios, Inc.
 Author URI: http://mindsharelabs.com/
 */
@@ -34,7 +34,7 @@ Author URI: http://mindsharelabs.com/
 
 /* CONSTANTS */
 if(!defined('WPUS_MIN_WP_VERSION')) {
-	define('WPUS_MIN_WP_VERSION', '3.1');
+	define('WPUS_MIN_WP_VERSION', '3.8');
 }
 
 if(!defined('WPUS_PLUGIN_NAME')) {
